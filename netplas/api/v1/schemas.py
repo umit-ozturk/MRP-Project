@@ -5,9 +5,9 @@ from rest_framework.schemas import ManualSchema
 
 HelloSchema = ManualSchema(fields=[
     coreapi.Field(
-        "asset",
+        "email",
         location="query",
-        required=True,
+        required=False,
         schema=coreschema.String()
     ),
 ])
