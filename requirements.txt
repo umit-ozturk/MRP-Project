@@ -10,6 +10,8 @@ itypes==1.1.0
 Jinja2==2.10
 Markdown==3.0.1
 MarkupSafe==1.1.1
+psycopg2==2.7.7
+psycopg2-binary==2.7.7
 pytz==2018.9
 requests==2.21.0
 uritemplate==3.0.0

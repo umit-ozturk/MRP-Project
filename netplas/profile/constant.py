@@ -1,0 +1,7 @@
+BOSS = "BOSS"
+WORKER = "WORKER"
+
+PERSONEL_TYPE = (
+    (BOSS, "BOSS"),
+    (WORKER, "WORKER")
+)
