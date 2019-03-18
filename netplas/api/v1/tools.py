@@ -26,3 +26,8 @@ def create_profile(user, params):
             return profile
     except Exception as ex:
         raise Exception(ex)
+
+
+def check_user_is_valid(user, **kwargs):  # Must be one signal token validation
+    if user is None:
+        raise Exception("E-posta yada parolanız hatalı, lütfen tekrar deneyiniz.")

@@ -5,4 +5,5 @@ from api.v1.views import *
 urlpatterns = [
     path('user/', hello, name='hello'),
     path('register/', register_view),
+    path('login/', login_view),
 ]
