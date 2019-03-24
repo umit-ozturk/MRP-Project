@@ -61,3 +61,4 @@ LoginSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
+

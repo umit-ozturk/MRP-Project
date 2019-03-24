@@ -4,7 +4,7 @@ from stock.models import ProductStock, RawStock
 
 
 class Product(models.Model):
-    stock = models.ForeignKey(ProductStock, on_delete=models.CASCADE)
+    stock = models.ForeignKey(ProductStock, on_delete=models.CASCADE, verbose_name=_('Ürün Deposu'))
     name = models.CharField(_('Ürün İsmi'), null=True, blank=True, max_length=150)
     quantity = models.PositiveIntegerField(_('Ürün Adeti'), null=True, blank=True)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
@@ -20,7 +20,7 @@ class Product(models.Model):
 
 
 class Raw(models.Model):
-    stock = models.ForeignKey(RawStock, on_delete=models.CASCADE)
+    stock = models.ForeignKey(RawStock, on_delete=models.CASCADE, verbose_name=_('Hammadde Deposu'))
     name = models.CharField(_('Hammadde İsmi'), null=True, blank=True, max_length=150)
     quantity = models.PositiveIntegerField(_('Hammadde Adeti'), null=True, blank=True)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
