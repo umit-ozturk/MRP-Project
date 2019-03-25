@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, schema, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
@@ -211,3 +212,12 @@ def create_raw_view(request):
         return Response({"detail": _("Ham madde deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RawUpdateAPIView(UpdateAPIView):
+    serializer_class = RawSerializer
+    authentication_classes = (TokenAuthentication,)
+    schema = (CreateRawSchema,)
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    queryset = Raw.objects.all()
