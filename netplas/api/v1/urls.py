@@ -1,6 +1,7 @@
 from django.urls import path, include
 from api.v1.views import *
 
+app_name = 'api'
 
 urlpatterns = [
     path('test/', test_view, name='test_service'),
@@ -14,4 +15,6 @@ urlpatterns = [
     path('raw_stock/create', create_raw_stock_view, name='create_raw_stock_service'),
     path('raw/list', list_raw_info_view, name='raw_info_by_name_service'),
     path('raw/create', create_raw_view, name='create_raw_service'),
+    path('raw/update/<int:id>/', RawUpdateAPIView.as_view(), name='raw-update'),
+
 ]
