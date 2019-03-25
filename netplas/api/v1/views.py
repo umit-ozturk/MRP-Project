@@ -5,22 +5,22 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
-from api.v1.schemas import HelloSchema, RegisterSchema, LoginSchema
+from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
+from product.serializers import ProductSerializer, RawSerializer
 from stock.models import ProductStock, RawStock
+from product.models import Product, Raw
 
 
 @api_view(['GET'])
-@schema(HelloSchema, )
-def hello(request):
+def test_view(request):
     """
-    API endpoint that just hello world.
+    API endpoint that just test.
     """
     try:
-        email = request.data["email"]
-        return Response({"message": "Hello World", "data": email}, status=status.HTTP_200_OK)
+        return Response({"message": _("Hello World")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"message": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -33,7 +33,7 @@ def register_view(request):
     """
     try:
         user = create_profile(request.user, request.data)
-        return Response({"detail": "Üyelik başarıyla oluşturuldu."}, status=status.HTTP_200_OK)
+        return Response({"detail": _("Üyelik başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,7 +55,7 @@ def login_view(request):
 
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
-def list_product_stock(request):
+def list_product_stock_view(request):
     """
     API endpoint return product stock names
     """
@@ -75,7 +75,7 @@ def list_product_stock(request):
 
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
-def list_raw_stock(request):
+def list_raw_stock_view(request):
     """
     API endpoint return raw stock names
     """
@@ -92,3 +92,44 @@ def list_raw_stock(request):
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+@schema(ProductInfoSchema, )
+def list_product_info_view(request):
+    """
+    API endpoint return product and quantity by product name
+    """
+    if request.method == "GET":
+        try:
+            product_info = Product.objects.filter(name=request.GET.get('product_name')).order_by('-created_at')
+            if product_info.count() != 0:
+                product_info_serializer = ProductSerializer(product_info, many=True)
+                return Response(product_info_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Ürün bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+@schema(RawInfoSchema, )
+def list_raw_info_view(request):
+    """
+    API endpoint return raw and quantity by raw name
+    """
+    if request.method == "GET":
+        try:
+            raw_info = Raw.objects.filter(name=request.GET.get('raw_name')).order_by('-created_at')
+            if raw_info.count() != 0:
+                raw_info_serializer = RawSerializer(raw_info, many=True)
+                return Response(raw_info_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Hammadde bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)

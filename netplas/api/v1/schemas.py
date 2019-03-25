@@ -3,16 +3,6 @@ import coreschema
 from rest_framework.schemas import ManualSchema
 
 
-HelloSchema = ManualSchema(fields=[
-    coreapi.Field(
-        "email",
-        location="query",
-        required=False,
-        schema=coreschema.String()
-    ),
-])
-
-
 RegisterSchema = ManualSchema(fields=[
     coreapi.Field(
         'user["name"]',
@@ -62,3 +52,22 @@ LoginSchema = ManualSchema(fields=[
     ),
 ])
 
+
+ProductInfoSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'product_name',
+        required=True,
+        location="query",
+        schema=coreschema.String()
+    ),
+])
+
+
+RawInfoSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'raw_name',
+        required=True,
+        location="query",
+        schema=coreschema.String()
+    ),
+])
