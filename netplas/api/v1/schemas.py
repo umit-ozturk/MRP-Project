@@ -71,3 +71,67 @@ RawInfoSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
+
+
+CreateProductStockSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'product_stock_name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+])
+
+
+CreateRawStockSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'raw_stock_name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+])
+
+
+CreateProductSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'product_stock_name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'product_name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'quantity',
+        required=True,
+        location="body",
+        schema=coreschema.Integer()
+    ),
+])
+
+
+CreateRawSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'raw_stock_name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'raw_name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'quantity',
+        required=True,
+        location="body",
+        schema=coreschema.Integer()
+    ),
+])

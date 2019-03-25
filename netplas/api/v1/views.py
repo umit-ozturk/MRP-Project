@@ -1,11 +1,13 @@
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, schema, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
-from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema
+from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
+    CreateRawStockSchema, CreateProductSchema, CreateRawSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
@@ -57,7 +59,7 @@ def login_view(request):
 @authentication_classes((TokenAuthentication,))
 def list_product_stock_view(request):
     """
-    API endpoint return product stock names
+    API endpoint that return product stock names
     """
     if request.method == "GET":
         try:
@@ -73,11 +75,26 @@ def list_product_stock_view(request):
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateProductStockSchema, )
+def create_product_stock_view(request):
+    """
+    API endpoint that create product stock
+    """
+    try:
+        product_stock = ProductStock(name=request.data)
+        product_stock.save()
+        return Response({"detail": _("Ürün deposu başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 def list_raw_stock_view(request):
     """
-    API endpoint return raw stock names
+    API endpoint that return raw stock names
     """
     if request.method == "GET":
         try:
@@ -86,11 +103,26 @@ def list_raw_stock_view(request):
                 raw_stock_serializer = RawStockSerializer(raw_stock, many=True)
                 return Response(raw_stock_serializer.data, status=status.HTTP_200_OK)
             else:
-                return Response({"detail": _("Daha önce herhangi bir hammadde deposu oluşturulmadı.")},
+                return Response({"detail": _("Daha önce herhangi bir ham madde deposu oluşturulmadı.")},
                                 status=status.HTTP_200_OK)
         except Exception as ex:
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateRawStockSchema, )
+def create_raw_stock_view(request):
+    """
+    API endpoint that create raw stock
+    """
+    try:
+        raw_stock = RawStock(name=request.data)
+        raw_stock.save()
+        return Response({"detail": _("Ham madde deposu başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -98,7 +130,7 @@ def list_raw_stock_view(request):
 @schema(ProductInfoSchema, )
 def list_product_info_view(request):
     """
-    API endpoint return product and quantity by product name
+    API endpoint that return product and quantity by product name
     """
     if request.method == "GET":
         try:
@@ -114,12 +146,35 @@ def list_product_info_view(request):
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateProductSchema, )
+def create_product_view(request):
+    """
+    API endpoint that create product
+    """
+    try:
+        quantity = request.data["quantity"]
+        if quantity > 0:
+            product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])
+            product = Product(stock=product_stock, name=request.data["product_name"], quantity=quantity)
+            product.save()
+            return Response({"detail": str(quantity) + _("adet ürün başarıyla oluşturuldu.")},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": _("Ürün miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
+    except ObjectDoesNotExist:
+        return Response({"detail": _("Ürün deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 @schema(RawInfoSchema, )
 def list_raw_info_view(request):
     """
-    API endpoint return raw and quantity by raw name
+    API endpoint that return raw and quantity by raw name
     """
     if request.method == "GET":
         try:
@@ -128,8 +183,31 @@ def list_raw_info_view(request):
                 raw_info_serializer = RawSerializer(raw_info, many=True)
                 return Response(raw_info_serializer.data, status=status.HTTP_200_OK)
             else:
-                return Response({"detail": _("Hammadde bilgisi bulunamadı.")},
+                return Response({"detail": _("Ham madde bilgisi bulunamadı.")},
                                 status=status.HTTP_200_OK)
         except Exception as ex:
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateRawSchema, )
+def create_raw_view(request):
+    """
+    API endpoint that create product
+    """
+    try:
+        quantity = request.data["quantity"]
+        if quantity > 0:
+            raw_stock = RawStock.objects.get(name=request.data["raw_stock_name"])
+            raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=quantity)
+            raw.save()
+            return Response({"detail": str(quantity) + _("adet ham madde başarıyla oluşturuldu.")},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": _("Ham madde miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
+    except ObjectDoesNotExist:
+        return Response({"detail": _("Ham madde deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
