@@ -16,5 +16,6 @@ urlpatterns = [
     path('raw/list', list_raw_info_view, name='raw_info_by_name_service'),
     path('raw/create', create_raw_view, name='create_raw_service'),
     path('raw/update/<int:id>/', RawUpdateAPIView.as_view(), name='raw-update'),
+    path('product/update/<int:id>/', ProductUpdateAPIView.as_view(), name='product-update'),
 
 ]
