@@ -197,10 +197,12 @@ def list_raw_info_view(request):
 @schema(CreateRawSchema, )
 def create_raw_view(request):
     """
-    API endpoint that create product
+    API endpoint that create raw
     """
     try:
-        quantity = request.data["quantity"]
+        print("Debug0000")
+        quantity = request.POST
+        print(quantity)
         if quantity > 0:
             raw_stock = RawStock.objects.get(name=request.data["raw_stock_name"])
             raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=quantity)
@@ -219,7 +221,7 @@ class RawUpdateAPIView(UpdateAPIView):
     serializer_class = RawSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch')
-    schema = (CreateRawSchema,)
+    schema = CreateRawSchema
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
     queryset = Raw.objects.all()
@@ -229,7 +231,7 @@ class ProductUpdateAPIView(UpdateAPIView):
     serializer_class = ProductSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch')
-    schema = (CreateProductSchema,)
+    schema = CreateProductSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = Product.objects.all()
