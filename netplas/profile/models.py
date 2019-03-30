@@ -5,6 +5,15 @@ from profile.constant import *
 
 
 class FirmPersonel(models.Model):
+    DEPARTMENTS = (
+        ('Others', '0'),
+        ('Store', '1'),
+        ('Worker', '2'),
+        ('Manager', '3')
+    )
+    department = models.CharField('Departman', max_length=40, choices=DEPARTMENTS, default='0')
+    salary = models.IntegerField('Brüt Maaş', default=3000)
+    level = models.IntegerField('Yetki Seviyesi', default=0)
     tckn = models.CharField('TKCN', max_length=11, null=True, blank=True)
     phone = models.CharField('Telefon Numarası', null=True, blank=True, max_length=15)
     type = models.CharField('Yetki Seviyesi', choices=PERSONEL_TYPE, default=WORKER,  max_length=150)
