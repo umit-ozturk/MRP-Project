@@ -40,5 +40,3 @@ class Test(APITestCase):
         response = client.patch(url, update_data)
         print(response.data)
         self.assertEqual(response.data['name'], 'TestUpdateProduct')
-
-
