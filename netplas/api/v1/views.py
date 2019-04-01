@@ -9,13 +9,14 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
-    CreateRawStockSchema, CreateProductSchema, CreateRawSchema
+    CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw
+from system.models import Client
 
 
 @api_view(['GET'])
@@ -200,9 +201,7 @@ def create_raw_view(request):
     API endpoint that create raw
     """
     try:
-        print("Debug0000")
         quantity = request.POST
-        print(quantity)
         if quantity > 0:
             raw_stock = RawStock.objects.get(name=request.data["raw_stock_name"])
             raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=quantity)
@@ -213,6 +212,22 @@ def create_raw_view(request):
             return Response({"detail": _("Ham madde miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
     except ObjectDoesNotExist:
         return Response({"detail": _("Ham madde deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateClientSchema, )
+def create_client_view(request):
+    """
+    API endpoint that create client
+    """
+    try:
+        client = Client(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
+                        phone=request.data["phone"])
+        client.save()
+        return Response({"detail": _("Müşteri başarı ile oluşturuldu")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 

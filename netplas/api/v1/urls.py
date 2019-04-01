@@ -18,4 +18,7 @@ urlpatterns = [
     path('raw/update/<int:id>/', RawUpdateAPIView.as_view(), name='raw-update'),
     path('product/update/<int:id>/', ProductUpdateAPIView.as_view(), name='product-update'),
 
+    path('client/create', create_client_view, name='create_client_service'),
+
+
 ]
