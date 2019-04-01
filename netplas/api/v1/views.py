@@ -162,7 +162,7 @@ def create_product_view(request):
             product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])
             product = Product(stock=product_stock, name=request.data["product_name"], quantity=quantity)
             product.save()
-            return Response({"detail": str(quantity) + _("adet ürün başarıyla oluşturuldu.")},
+            return Response({"detail": _(str(quantity) + " adet ürün başarıyla oluşturuldu.")},
                             status=status.HTTP_200_OK)
         else:
             return Response({"detail": _("Ürün miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
@@ -201,12 +201,18 @@ def create_raw_view(request):
     API endpoint that create raw
     """
     try:
-        quantity = request.POST
-        if quantity > 0:
+        quantity = request.data["quantity"]
+        print("Debug00")
+        if int(quantity) > 0:
+            print(quantity)
+            print("Debug11")
             raw_stock = RawStock.objects.get(name=request.data["raw_stock_name"])
-            raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=quantity)
+            print(raw_stock)
+            raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=int(quantity))
+            print(raw)
             raw.save()
-            return Response({"detail": str(quantity) + _("adet ham madde başarıyla oluşturuldu.")},
+            print("Debug22")
+            return Response({"detail": _(str(quantity) + " adet ham madde başarıyla oluşturuldu.")},
                             status=status.HTTP_200_OK)
         else:
             return Response({"detail": _("Ham madde miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)

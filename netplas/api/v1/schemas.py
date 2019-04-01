@@ -110,7 +110,7 @@ CreateProductSchema = ManualSchema(fields=[
         'quantity',
         required=True,
         location="body",
-        schema=coreschema.Integer()
+        schema=coreschema.String()
     ),
 ])
 
@@ -132,7 +132,7 @@ CreateRawSchema = ManualSchema(fields=[
         'quantity',
         required=True,
         location="body",
-        schema=coreschema.Integer()
+        schema=coreschema.String()
     ),
 ])
 
