@@ -21,5 +21,7 @@ urlpatterns = [
     path('client/create', create_client_view, name='create_client_service'),
     path('supplier/create', create_supplier_view, name='create_supplier_service'),
 
+    path('product_order/create', create_product_order_view, name='create_product_order_service'),
+    path('raw_order/create', create_raw_order_view, name='create_raw_order_service'),
 
 ]

@@ -9,14 +9,15 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
-    CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema
+    CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
+    CreateProductOrederSchema, CreateRawOrederSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw
-from system.models import Client, Supplier
+from system.models import Client, Supplier, ProductOrder, RawOrder
 
 
 @api_view(['GET'])
@@ -243,6 +244,38 @@ def create_supplier_view(request):
         supplier = Supplier(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
                             phone=request.data["phone"])
         supplier.save()
+        return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateProductOrederSchema, )
+def create_product_order_view(request):  # Testing doesnt not yet.
+    """
+    API endpoint that create product order
+    """
+    try:
+        client = Client.objects.get(email=request.data["client"])
+        product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"])
+        product_order.save()
+        return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateRawOrederSchema, )
+def create_raw_order_view(request): # Testing doesnt not yet.
+    """
+    API endpoint that create raw order
+    """
+    try:
+        supplier = Supplier.objects.get(email=request.data["supplier"])
+        raw_order = RawOrder(supplier=supplier,  name=request.data["name"], quantity=request.data["quantity"])
+        raw_order.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)

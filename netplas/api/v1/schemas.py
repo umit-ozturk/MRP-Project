@@ -193,3 +193,46 @@ CreateSupplierSchema = ManualSchema(fields=[
 ])
 
 
+CreateProductOrederSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'client',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'quantity',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+])
+
+
+CreateRawOrederSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'supplier',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'quantity',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+])
+
