@@ -163,3 +163,33 @@ CreateClientSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
+
+
+CreateSupplierSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'email',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'name',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'surname',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'phone',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+])
+
+

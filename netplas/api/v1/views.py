@@ -9,14 +9,14 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
-    CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema
+    CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw
-from system.models import Client
+from system.models import Client, Supplier
 
 
 @api_view(['GET'])
@@ -202,16 +202,10 @@ def create_raw_view(request):
     """
     try:
         quantity = request.data["quantity"]
-        print("Debug00")
         if int(quantity) > 0:
-            print(quantity)
-            print("Debug11")
             raw_stock = RawStock.objects.get(name=request.data["raw_stock_name"])
-            print(raw_stock)
             raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=int(quantity))
-            print(raw)
             raw.save()
-            print("Debug22")
             return Response({"detail": _(str(quantity) + " adet ham madde başarıyla oluşturuldu.")},
                             status=status.HTTP_200_OK)
         else:
@@ -233,7 +227,23 @@ def create_client_view(request):
         client = Client(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
                         phone=request.data["phone"])
         client.save()
-        return Response({"detail": _("Müşteri başarı ile oluşturuldu")}, status=status.HTTP_200_OK)
+        return Response({"detail": _("Müşteri başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateSupplierSchema, )
+def create_supplier_view(request):
+    """
+    API endpoint that create supplier
+    """
+    try:
+        supplier = Supplier(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
+                            phone=request.data["phone"])
+        supplier.save()
+        return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
