@@ -12,7 +12,7 @@ class FirmPersonel(models.Model):
     updated_at = models.DateTimeField('Güncellenme Tarihi', auto_now=True, editable=False)
 
     class Meta:
-        verbose_name= 'Firma Personeli'
+        verbose_name = 'Firma Personeli'
         verbose_name_plural = 'Firma Personelleri'
         ordering = ('-created_at',)
 

@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from system.constant import *
+from profile.models import UserProfile
 
 
 class Client(models.Model):
@@ -71,3 +72,23 @@ class RawOrder(models.Model):
 
     def __str__(self):
         return '{}'.format(self.name)
+
+
+class Budget(models.Model):
+    product_order = models.ForeignKey(ProductOrder, verbose_name=_('Ürün Siparişi'), null=True, blank=True,
+                                      on_delete=models.CASCADE)
+    raw_order = models.ForeignKey(RawOrder, verbose_name=_('Hammadde Siparişi'), null=True, blank=True,
+                                  on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
+                             on_delete=models.CASCADE)
+    total = models.IntegerField(_('Toplam Bütçe'), null=True, blank=True)
+    created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+
+    class Meta:
+        verbose_name= _('Gelir/Gider')
+        verbose_name_plural = _('Gelirler/Giderler')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return '{}'.format(self.user)
