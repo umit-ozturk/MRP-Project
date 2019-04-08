@@ -193,7 +193,7 @@ CreateSupplierSchema = ManualSchema(fields=[
 ])
 
 
-CreateProductOrederSchema = ManualSchema(fields=[
+CreateProductOrderSchema = ManualSchema(fields=[
     coreapi.Field(
         'client',
         required=True,
@@ -215,7 +215,7 @@ CreateProductOrederSchema = ManualSchema(fields=[
 ])
 
 
-CreateRawOrederSchema = ManualSchema(fields=[
+CreateRawOrderSchema = ManualSchema(fields=[
     coreapi.Field(
         'supplier',
         required=True,

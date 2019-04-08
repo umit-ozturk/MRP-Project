@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
-    CreateProductOrederSchema, CreateRawOrederSchema
+    CreateProductOrderSchema, CreateRawOrderSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
@@ -17,6 +17,7 @@ from product.serializers import ProductSerializer, RawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw
 from system.models import Client, Supplier, ProductOrder, RawOrder
+from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer
 
 
 @api_view(['GET'])
@@ -93,6 +94,16 @@ def create_product_stock_view(request):
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProductStockUpdateAPIView(UpdateAPIView):
+    serializer_class = ProductStockSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateProductStockSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = ProductStock.objects.all()
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 def list_raw_stock_view(request):
@@ -126,6 +137,16 @@ def create_raw_stock_view(request):
         return Response({"detail": _("Ham madde deposu başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RawStockUpdateAPIView(UpdateAPIView):
+    serializer_class = RawStockSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateRawStockSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = RawStock.objects.all()
 
 
 @api_view(['GET'])
@@ -172,6 +193,16 @@ def create_product_view(request):
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProductUpdateAPIView(UpdateAPIView):
+    serializer_class = ProductSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateProductSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Product.objects.all()
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 @schema(RawInfoSchema, )
@@ -216,6 +247,36 @@ def create_raw_view(request):
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class RawUpdateAPIView(UpdateAPIView):
+    serializer_class = RawSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateRawSchema
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    queryset = Raw.objects.all()
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def list_client_view(request):
+    """
+    API endpoint that return client information
+    """
+    if request.method == "GET":
+        try:
+            client = Client.objects.all().order_by('-created_at')
+            if client.count() != 0:
+                client_serializer = ClientSerializer(client, many=True)
+                return Response(client_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Daha önce herhangi bir müşteri oluşturulmadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication,))
 @schema(CreateClientSchema, )
@@ -230,6 +291,36 @@ def create_client_view(request):
         return Response({"detail": _("Müşteri başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClientUpdateAPIView(UpdateAPIView):
+    serializer_class = ClientSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateClientSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Client.objects.all()
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def list_supplier_view(request):
+    """
+    API endpoint that return supplier information
+    """
+    if request.method == "GET":
+        try:
+            supplier = Supplier.objects.all().order_by('-created_at')
+            if supplier.count() != 0:
+                supplier_serializer = SupplierSerializer(supplier, many=True)
+                return Response(supplier_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Daha önce herhangi bir tedarikçi oluşturulmadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -248,9 +339,39 @@ def create_supplier_view(request):
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class SupplierUpdateAPIView(UpdateAPIView):
+    serializer_class = SupplierSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateSupplierSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Supplier.objects.all()
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def list_product_order_view(request):
+    """
+    API endpoint that return product order information
+    """
+    if request.method == "GET":
+        try:
+            product_order = ProductOrder.objects.all().order_by('-created_at')
+            if product_order.count() != 0:
+                product_order_serializer = ProductOrderSerializer(product_order, many=True)
+                return Response(product_order_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Daha önce herhangi bir ürün siparişi oluşturulmadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication,))
-@schema(CreateProductOrederSchema, )
+@schema(CreateProductOrderSchema, )
 def create_product_order_view(request):  # Testing doesnt not yet.
     """
     API endpoint that create product order
@@ -264,9 +385,39 @@ def create_product_order_view(request):  # Testing doesnt not yet.
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProductOrderUpdateAPIView(UpdateAPIView):
+    serializer_class = ProductOrderSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = CreateProductOrderSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = ProductOrder.objects.all()
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def list_raw_order_view(request):
+    """
+    API endpoint that return raw order information
+    """
+    if request.method == "GET":
+        try:
+            raw_order = RawOrder.objects.all().order_by('-created_at')
+            if raw_order.count() != 0:
+                raw_order_serializer = RawOrderSerializer(raw_order, many=True)
+                return Response(raw_order_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Daha önce herhangi bir malzeme siparişi oluşturulmadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication,))
-@schema(CreateRawOrederSchema, )
+@schema(CreateRawOrderSchema, )
 def create_raw_order_view(request): # Testing doesnt not yet.
     """
     API endpoint that create raw order
@@ -280,21 +431,11 @@ def create_raw_order_view(request): # Testing doesnt not yet.
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RawUpdateAPIView(UpdateAPIView):
-    serializer_class = RawSerializer
+class RawOrderUpdateAPIView(UpdateAPIView):
+    serializer_class = RawOrderSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put', 'patch')
-    schema = CreateRawSchema
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
-    queryset = Raw.objects.all()
-
-
-class ProductUpdateAPIView(UpdateAPIView):
-    serializer_class = ProductSerializer
-    authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put', 'patch')
-    schema = CreateProductSchema
+    http_method_names = ('put',)
+    schema = CreateRawOrderSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
-    queryset = Product.objects.all()
+    queryset = RawOrder.objects.all()
