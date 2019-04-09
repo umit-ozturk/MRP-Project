@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, schema, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
@@ -104,6 +104,22 @@ class ProductStockUpdateAPIView(UpdateAPIView):
     queryset = ProductStock.objects.all()
 
 
+class ProductStockDeleteAPIView(DestroyAPIView):
+    serializer_class = ProductStockSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = ProductStock.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": _("Ürün deposu başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+        except:
+            return Response({"detail": _("Ürün deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 def list_raw_stock_view(request):
@@ -147,6 +163,18 @@ class RawStockUpdateAPIView(UpdateAPIView):
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = RawStock.objects.all()
+
+
+class RawStockDeleteAPIView(DestroyAPIView):
+    serializer_class = RawStockSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = RawStock.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        return Response({"detail": _("Ham madde deposu başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+
 
 
 @api_view(['GET'])
@@ -203,6 +231,17 @@ class ProductUpdateAPIView(UpdateAPIView):
     queryset = Product.objects.all()
 
 
+class ProductDeleteAPIView(DestroyAPIView):
+    serializer_class = ProductSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Product.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        return Response({"detail": _("Ürün başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 @schema(RawInfoSchema, )
@@ -257,6 +296,17 @@ class RawUpdateAPIView(UpdateAPIView):
     queryset = Raw.objects.all()
 
 
+class RawDeleteAPIView(DestroyAPIView):
+    serializer_class = RawSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Raw.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        return Response({"detail": _("Ham madde başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 def list_client_view(request):
@@ -301,6 +351,17 @@ class ClientUpdateAPIView(UpdateAPIView):
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = Client.objects.all()
+
+
+class ClientDeleteAPIView(DestroyAPIView):
+    serializer_class = ClientSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Client.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        return Response({"detail": _("Müşteri bilgileri başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -349,6 +410,17 @@ class SupplierUpdateAPIView(UpdateAPIView):
     queryset = Supplier.objects.all()
 
 
+class SupplierDeleteAPIView(DestroyAPIView):
+    serializer_class = SupplierSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = Supplier.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        return Response({"detail": _("Müşteri bilgileri başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 def list_product_order_view(request):
@@ -380,7 +452,7 @@ def create_product_order_view(request):  # Testing doesnt not yet.
         client = Client.objects.get(email=request.data["client"])
         product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"])
         product_order.save()
-        return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
+        return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -393,6 +465,17 @@ class ProductOrderUpdateAPIView(UpdateAPIView):
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = ProductOrder.objects.all()
+
+
+class ProductOrderDeleteAPIView(DestroyAPIView):
+    serializer_class = ProductOrderSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = ProductOrder.objects.all()
+
+    def on_success(self):
+        return Response({"detail": _("Ürün siparişi başarı ile kaldırıldı.")}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -436,6 +519,14 @@ class RawOrderUpdateAPIView(UpdateAPIView):
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put',)
     schema = CreateRawOrderSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = RawOrder.objects.all()
+
+
+class RawOrderDeleteAPIView(DestroyAPIView):
+    serializer_class = RawOrderSerializer
+    authentication_classes = (TokenAuthentication,)
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = RawOrder.objects.all()
