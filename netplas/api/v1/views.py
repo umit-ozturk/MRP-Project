@@ -579,7 +579,7 @@ def budget_total_view(request):
     """
     if request.method == "GET":
         try:
-            budget = Budget.objects.all().latest()
+            budget = Budget.objects.all().order_by('-created_at')
             if budget.count() != 0:
                 budget_serializer = BudgetSerializer(budget, many=True)
                 return Response(budget_serializer.data, status=status.HTTP_200_OK)
