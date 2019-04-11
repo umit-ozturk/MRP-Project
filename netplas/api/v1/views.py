@@ -16,8 +16,9 @@ from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw
-from system.models import Client, Supplier, ProductOrder, RawOrder
-from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer
+from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
+from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
+    BudgetSerializer
 
 
 @api_view(['GET'])
@@ -568,3 +569,23 @@ class RawOrderDeleteAPIView(DestroyAPIView):
                             status=status.HTTP_200_OK)
         except:
             return Response({"detail": _("Ham madde siparişi bilgileri bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def budget_total_view(request):
+    """
+    API endpoint that return total money on system
+    """
+    if request.method == "GET":
+        try:
+            budget = Budget.objects.all().latest()
+            if budget.count() != 0:
+                budget_serializer = BudgetSerializer(budget, many=True)
+                return Response(budget_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Bütçe bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)

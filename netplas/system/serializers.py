@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from system.models import Client, Supplier, RawOrder, ProductOrder
+from system.models import Client, Supplier, RawOrder, ProductOrder, Budget
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -28,3 +28,10 @@ class ProductOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductOrder
         fields = ('id', 'name', 'status', 'created_at', 'updated_at', )
+
+
+class BudgetSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Budget
+        fields = ('id', 'total', 'updated_at', )

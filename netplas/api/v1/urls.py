@@ -48,4 +48,6 @@ urlpatterns = [
     path('raw_order/update/<int:id>/', RawOrderUpdateAPIView.as_view(), name='raw_order_update_service'),
     path('raw_order/delete/<int:id>/', RawOrderDeleteAPIView.as_view(), name='raw_order_delete_service'),
 
+    path('budget/total/', budget_total_view, name='total_budget_service'),
+
 ]
