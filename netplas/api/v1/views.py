@@ -589,3 +589,23 @@ def budget_total_view(request):
         except Exception as ex:
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def budget_income_detail_and_total_view(request):
+    """
+    API endpoint that return total income money on system
+    """
+    if request.method == "GET":  # Total money recevier should be appended to model
+        try:
+            budget = Budget.objects.exclude(product_order__isnull=True).order_by('-created_at')
+            if budget.count() != 0:
+                budget_serializer = BudgetSerializer(budget, many=True)
+                return Response(budget_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Bütçe bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)

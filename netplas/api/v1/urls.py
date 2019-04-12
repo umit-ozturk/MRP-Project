@@ -49,5 +49,6 @@ urlpatterns = [
     path('raw_order/delete/<int:id>/', RawOrderDeleteAPIView.as_view(), name='raw_order_delete_service'),
 
     path('budget/total/', budget_total_view, name='total_budget_service'),
+    path('budget/total/income/', budget_income_detail_and_total_view, name='income_detail_and_total_budget_service'),
 
 ]
