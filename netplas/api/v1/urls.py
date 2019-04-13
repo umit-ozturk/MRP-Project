@@ -50,5 +50,6 @@ urlpatterns = [
 
     path('budget/total/', budget_total_view, name='total_budget_service'),
     path('budget/total/income/', budget_income_detail_and_total_view, name='income_detail_and_total_budget_service'),
+    path('budget/total/outcome/', budget_outcome_detail_and_total_view, name='outcome_detail_and_total_budget_service'),
 
 ]
