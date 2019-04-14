@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from system.constant import *
 from profile.models import UserProfile
+from decimal import Decimal
 
 
 class Client(models.Model):
@@ -44,8 +45,9 @@ class ProductOrder(models.Model):
     client = models.ForeignKey(Client, verbose_name=_('Müşteri'), null=False, blank=False,
                                on_delete=models.CASCADE)
     name = models.CharField(_('Ürün İsmi'), null=True, blank=True, max_length=150)
-    quantitiy = models.PositiveIntegerField(_('Siparişteki Ürün Sayısı'), null=True, blank=True)
-    unit_price = models.PositiveIntegerField(_('Ürünün Birim Fiyatı'), null=True, blank=True)
+    quantitiy = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=5,
+                                    max_digits=10)
+    unit_price = models.DecimalField(_('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
     status = models.CharField(_('Ürün Siparişin Durumu'), choices=PRODUCT_ORDER_STATUS, default=WAITING,  max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
@@ -63,8 +65,10 @@ class RawOrder(models.Model):
     supplier = models.ForeignKey(Supplier, verbose_name=_('Tedarikçi'), null=False, blank=False,
                                  on_delete=models.CASCADE)
     name = models.CharField(_('Hammadde İsmi'), null=True, blank=True, max_length=150)
-    quantitiy = models.PositiveIntegerField(_('Siparişteki Hammadde Sayısı'), null=True, blank=True)
-    unit_price = models.PositiveIntegerField(_('Hammaddenin Birim Fiyatı'), null=True, blank=True)
+    quantitiy = models.DecimalField(_('Siparişteki Hammadde Sayısı'), null=True, blank=True, decimal_places=5,
+                                    max_digits=10)
+    unit_price = models.DecimalField(_('Hammaddenin Birim Fiyatı'), null=True, blank=True, decimal_places=5,
+                                     max_digits=10)
     status = models.CharField(_('Hammadde Siparişin Durumu'), choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
@@ -85,7 +89,8 @@ class Budget(models.Model):
                                   on_delete=models.CASCADE)
     user = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
                              on_delete=models.CASCADE)
-    total = models.IntegerField(_('Toplam Bütçe'), null=True, blank=True)
+    total_income = models.DecimalField(_('Toplam Gelir'), null=True, blank=True, decimal_places=5, max_digits=10)
+    total_outcome = models.DecimalField(_('Toplam Gider'), null=True, blank=True, decimal_places=5, max_digits=10)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
@@ -99,18 +104,31 @@ class Budget(models.Model):
 
 
 @receiver(pre_save, sender=Budget)
-def set_total(sender, **kwargs):
+def set_income_total(sender, **kwargs):
     instance = kwargs["instance"]
-    if kwargs["instance"].id is None:
-        total = Budget.objects.filter(user=kwargs["instance"].user).first()
+    if instance.id is None:
+        total_income = Budget.objects.filter(user=instance.user).exclude(product_order__isnull=True).first()
 
-        if total is not None:
+        if total_income is not None:
             if instance.product_order:
-                instance.total = total.total + instance.product_order.unit_price * instance.product_order.quantitiy
-            elif kwargs["instance"].raw_order:
-                instance.total = total.total - instance.raw_order.unit_price * instance.raw_order.quantitiy
+                instance.total_income = Decimal(total_income.total_income + instance.product_order.unit_price *
+                                                instance.product_order.quantitiy)
         else:
             if instance.product_order:
-                instance.total = kwargs["instance"].product_order.unit_price * instance.product_order.quantitiy
-            elif instance.raw_order:
-                instance.total = 0 - instance.raw_order.unit_price * instance.raw_order.quantitiy
+                instance.total_income = Decimal(instance.product_order.unit_price * instance.product_order.quantitiy)
+
+
+@receiver(pre_save, sender=Budget)
+def set_outcome_total(sender, **kwargs):
+    instance = kwargs["instance"]
+    if instance.id is None:
+        total_outcome = Budget.objects.filter(user=instance.user).exclude(raw_order__isnull=True).first()
+
+        if total_outcome is not None:
+            if instance.raw_order:
+                instance.total_outcome = Decimal(total_outcome.total_outcome - instance.raw_order.unit_price
+                                                 * instance.raw_order.quantitiy)
+        else:
+            if instance.raw_order:
+                instance.total_outcome = Decimal(0 - instance.raw_order.unit_price
+                                                 * instance.raw_order.quantitiy)

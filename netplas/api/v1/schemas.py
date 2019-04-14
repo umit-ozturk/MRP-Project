@@ -235,4 +235,3 @@ CreateRawOrderSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
-
