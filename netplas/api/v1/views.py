@@ -9,13 +9,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
-    CreateProductOrderSchema, CreateRawOrderSchema
+    CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
-from product.serializers import ProductSerializer, RawSerializer
+from product.serializers import ProductSerializer, RawSerializer, DamagedProductSerializer, DamagedRawSerializer
 from stock.models import ProductStock, RawStock
-from product.models import Product, Raw
+from product.models import Product, Raw, DamagedProduct, DamagedRaw
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer
@@ -569,6 +569,73 @@ class RawOrderDeleteAPIView(DestroyAPIView):
                             status=status.HTTP_200_OK)
         except:
             return Response({"detail": _("Ham madde siparişi bilgileri bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+@schema(RawInfoSchema, )
+def list_damaged_raw_info_view(request):
+    """
+    API endpoint that return damaged raw and quantity by damaged raw name
+    """
+    if request.method == "GET":
+        try:
+            raw = Raw.objects.get(name=request.data["raw_name"])
+            damaged_raw_info = DamagedRaw.objects.filter(raw=raw).order_by('-created_at')
+            if damaged_raw_info.count() != 0:
+                damaged_raw_info_serializer = DamagedRaw(damaged_raw_info, many=True)
+                return Response(damaged_raw_info_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Ham madde bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(DamagedCreateRawOrderSchema, )
+def create_damaged_raw_view(request):
+    """
+    API endpoint that create damaged raw
+    """
+    try:
+        raw = Raw.objects.get(name=request.data["raw_name"])
+        damaged_raw = DamagedRaw(raw=raw)
+        damaged_raw.save()
+        return Response({"detail": _(" adet hasarlı ham madde başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
+    except ObjectDoesNotExist:
+        return Response({"detail": _("Hasarlı ham madde deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DamagedRawUpdateAPIView(UpdateAPIView):
+    serializer_class = DamagedRawSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put',)
+    schema = DamagedCreateRawOrderSchema
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    queryset = DamagedRaw.objects.all()
+
+
+class DamagedRawDeleteAPIView(DestroyAPIView):
+    serializer_class = DamagedRawSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = DamagedRaw.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": _("Hasarlı Ham madde başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+        except:
+            return Response({"detail": _("Hasarlı Ham madde bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])

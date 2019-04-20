@@ -235,3 +235,13 @@ CreateRawOrderSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
+
+
+DamagedCreateRawOrderSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'raw',
+        required=True,
+        location="body",
+        schema=coreschema.String()
+    ),
+])
