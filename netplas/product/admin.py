@@ -3,12 +3,12 @@ from product.models import Product, Raw
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('stock', 'name', 'quantity', 'created_at', )
+    list_display = ('stock', 'name', 'created_at', )
     search_fields = ('stock', 'name',)
 
 
 class RawAdmin(admin.ModelAdmin):
-    list_display = ('stock', 'name', 'quantity', 'created_at', )
+    list_display = ('stock', 'name', 'created_at', )
     search_fields = ('stock', 'name',)
 
 

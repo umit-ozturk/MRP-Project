@@ -8,7 +8,7 @@ class ProductStockSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductStock
-        fields = ('name', 'created_at',)
+        fields = ('id', 'name', 'created_at',)
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
@@ -19,7 +19,7 @@ class RawStockSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RawStock
-        fields = ('name', 'created_at',)
+        fields = ('id', 'name', 'created_at',)
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
