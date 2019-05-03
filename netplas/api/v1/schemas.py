@@ -101,17 +101,24 @@ CreateProductSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
     coreapi.Field(
+        name='raw_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
         name='product_name',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        name='quantity',
+        name='price',
         required=True,
         location="form",
-        schema=coreschema.String()
+        schema=coreschema.Integer()
     ),
+
 ])
 
 

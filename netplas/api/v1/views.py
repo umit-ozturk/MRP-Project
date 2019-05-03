@@ -214,7 +214,8 @@ def create_product_view(request):
         quantity = request.data['quantity']
         if int(quantity) > 0:
             product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])
-            product = Product(stock=product_stock, name=request.data["product_name"], quantity=int(quantity))
+            raw = Raw.objects.get(name=request.data["raw_name"])
+            product = Product(stock=product_stock, raw=raw, name=request.data["product_name"], quantity=int(quantity))
             product.save()
             return Response({"detail": _(str(quantity) + " adet ürün başarıyla oluşturuldu.")},
                             status=status.HTTP_200_OK)
