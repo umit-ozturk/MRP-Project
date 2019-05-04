@@ -22,7 +22,7 @@ from system.serializers import ClientSerializer, SupplierSerializer, ProductOrde
 
 
 @api_view(['GET'])
-def test_view(request):
+def test_view():
     """
     API endpoint that just test.
     """
@@ -39,7 +39,7 @@ def register_view(request):
     API endpoint that allows users to register.
     """
     try:
-        user = create_profile(request.user, request.data)
+        create_profile(request.user, request.data)
         return Response({"detail": _("Üyelik başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
@@ -117,7 +117,8 @@ class ProductStockDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Ürün deposu başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Ürün deposu bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -178,7 +179,8 @@ class RawStockDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Ham madde deposu başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Ham madde deposu bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -249,7 +251,8 @@ class ProductDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Ürün başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Ürün bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -319,7 +322,8 @@ class RawDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Ham madde başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Ham madde bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -381,7 +385,8 @@ class ClientDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Müşteri bilgileri başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Müşteri bilgileri bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -443,7 +448,8 @@ class SupplierDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Tedarikçi bilgileri başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Tedarikçi bilgileri bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -505,7 +511,8 @@ class ProductOrderDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Ürün siparişi bilgileri başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Ürün siparişi bilgileri bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -532,7 +539,7 @@ def list_raw_order_view(request):
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication,))
 @schema(CreateRawOrderSchema, )
-def create_raw_order_view(request): # Testing doesnt not yet.
+def create_raw_order_view(request):  # Testing doesnt not yet.
     """
     API endpoint that create raw order
     """
@@ -568,9 +575,9 @@ class RawOrderDeleteAPIView(DestroyAPIView):
             self.perform_destroy(instance)
             return Response({"detail": _("Ham madde siparişi bilgileri başarıyla kaldırıldı.")},
                             status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Ham madde siparişi bilgileri bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
-
 
 
 @api_view(['GET'])
@@ -635,7 +642,8 @@ class DamagedRawDeleteAPIView(DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             return Response({"detail": _("Hasarlı Ham madde başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
-        except:
+        except Exception as ex:
+            print(str(ex))
             return Response({"detail": _("Hasarlı Ham madde bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 

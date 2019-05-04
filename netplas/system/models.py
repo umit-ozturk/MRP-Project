@@ -3,6 +3,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from system.constant import *
+from product.models import Product, Raw
 from profile.models import UserProfile
 from decimal import Decimal
 
@@ -16,7 +17,7 @@ class Client(models.Model):
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
-        verbose_name= _('Müşteri')
+        verbose_name = _('Müşteri')
         verbose_name_plural = _('Müşteriler')
         ordering = ('-created_at',)
 
@@ -33,7 +34,7 @@ class Supplier(models.Model):
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
-        verbose_name= _('Tedarikçi')
+        verbose_name = _('Tedarikçi')
         verbose_name_plural = _('Tedarikçiler')
         ordering = ('-created_at',)
 
@@ -44,16 +45,18 @@ class Supplier(models.Model):
 class ProductOrder(models.Model):
     client = models.ForeignKey(Client, verbose_name=_('Müşteri'), null=False, blank=False,
                                on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Ürün'), null=False, blank=False,
+                                on_delete=models.CASCADE)
     name = models.CharField(_('Ürün İsmi'), null=True, blank=True, max_length=150)
-    quantitiy = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=5,
-                                    max_digits=10)
+    quantity = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=5,
+                                   max_digits=10)
     unit_price = models.DecimalField(_('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
-    status = models.CharField(_('Ürün Siparişin Durumu'), choices=PRODUCT_ORDER_STATUS, default=WAITING,  max_length=150)
+    status = models.CharField(_('Ürün Siparişin Durumu'), choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
-        verbose_name= _('Ürün Siparişi')
+        verbose_name = _('Ürün Siparişi')
         verbose_name_plural = _('Ürün Siparişleri')
         ordering = ('-created_at',)
 
@@ -64,17 +67,17 @@ class ProductOrder(models.Model):
 class RawOrder(models.Model):
     supplier = models.ForeignKey(Supplier, verbose_name=_('Tedarikçi'), null=False, blank=False,
                                  on_delete=models.CASCADE)
+    raw = models.ForeignKey(Raw, verbose_name=_('Hammadde'), null=False, blank=False,
+                            on_delete=models.CASCADE)
     name = models.CharField(_('Hammadde İsmi'), null=True, blank=True, max_length=150)
-    quantitiy = models.DecimalField(_('Siparişteki Hammadde Sayısı'), null=True, blank=True, decimal_places=5,
+    quantity = models.DecimalField(_('Siparişteki Hammadde Sayısı'), null=True, blank=True, decimal_places=5,
                                     max_digits=10)
-    unit_price = models.DecimalField(_('Hammaddenin Birim Fiyatı'), null=True, blank=True, decimal_places=5,
-                                     max_digits=10)
     status = models.CharField(_('Hammadde Siparişin Durumu'), choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
-        verbose_name= _('Hammadde Siparişi')
+        verbose_name = _('Hammadde Siparişi')
         verbose_name_plural = _('Hammadde Siparişleri')
         ordering = ('-created_at',)
 
@@ -95,7 +98,7 @@ class Budget(models.Model):
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
-        verbose_name= _('Gelir/Gider')
+        verbose_name = _('Gelir/Gider')
         verbose_name_plural = _('Gelirler/Giderler')
         ordering = ('-created_at',)
 
