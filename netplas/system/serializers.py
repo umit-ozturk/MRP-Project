@@ -6,6 +6,7 @@ from product.serializers import RawSerializer, ProductSerializer
 
 class ClientSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Client
@@ -14,9 +15,13 @@ class ClientSerializer(serializers.ModelSerializer):
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
 
+    def get_updated_at(self, obj):
+        return _date(obj.updated_at, "d F, Y")
+
 
 class SupplierSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Supplier
@@ -24,6 +29,9 @@ class SupplierSerializer(serializers.ModelSerializer):
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
+
+    def get_updated_at(self, obj):
+        return _date(obj.updated_at, "d F, Y")
 
 
 class RawOrderSerializer(serializers.ModelSerializer):
@@ -61,11 +69,15 @@ class ProductOrderSerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+    created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Budget
-        fields = ('id', 'total_income', 'total_outcome', 'updated_at', )
+        fields = ('id', 'total_income', 'total_outcome', 'created_at', 'updated_at', )
+
+    def get_created_at(self, obj):
+        return _date(obj.created_at, "d F, Y")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y")
