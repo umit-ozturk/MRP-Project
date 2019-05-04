@@ -24,7 +24,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("id", 'stock', 'name', 'quantity', 'created_at',)
+        fields = ("id", 'stock', 'name', 'amount', 'created_at',)
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
@@ -36,7 +36,7 @@ class RawSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Raw
-        fields = ("id", 'stock', 'name', 'quantity', 'created_at',)
+        fields = ("id", 'stock', 'name', 'amount', 'created_at',)
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")

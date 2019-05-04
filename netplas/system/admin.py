@@ -13,12 +13,12 @@ class SupplierAdmin(admin.ModelAdmin):
 
 
 class ProductOrderAdmin(admin.ModelAdmin):
-    list_display = ('client', 'name', 'quantity', 'status', 'created_at', )
+    list_display = ('client', 'name', 'quantity', 'total', 'status', 'created_at', )
     search_fields = ('name', 'status', )
 
 
 class RawOrderAdmin(admin.ModelAdmin):
-    list_display = ('supplier', 'name', 'quantity', 'status', 'created_at',)
+    list_display = ('supplier', 'name', 'quantity', 'total', 'status', 'created_at',)
     search_fields = ('name', 'status', )
 
 

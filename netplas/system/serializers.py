@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.template.defaultfilters import date as _date
 from system.models import Client, Supplier, RawOrder, ProductOrder, Budget
+from product.serializers import RawSerializer, ProductSerializer
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -26,16 +27,14 @@ class SupplierSerializer(serializers.ModelSerializer):
 
 
 class RawOrderSerializer(serializers.ModelSerializer):
-    supplier = serializers.SerializerMethodField()
+    supplier = SupplierSerializer(many=False, read_only=True)
+    raw = RawSerializer(many=False, read_only=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = RawOrder
-        fields = ('id', 'name', 'status', 'supplier', 'quantity', 'unit_price', 'created_at', 'updated_at', )
-
-    def get_supplier(self):
-        pass
+        fields = ('id', 'name', 'status', 'quantity', 'total', 'supplier', 'raw', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
@@ -45,11 +44,14 @@ class RawOrderSerializer(serializers.ModelSerializer):
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):
+    client = ClientSerializer(many=False, read_only=True)
+    product = ProductSerializer(many=False, read_only=True)
+    created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductOrder
-        fields = ('id', 'name', 'status', 'client', 'quantity', 'unit_price', 'created_at', 'updated_at', )
+        fields = ('id', 'name', 'status', 'quantity', 'total', 'client', 'product', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")

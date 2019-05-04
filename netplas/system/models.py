@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.dispatch import receiver
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from system.constant import *
 from product.models import Product, Raw
 from profile.models import UserProfile
@@ -48,9 +48,9 @@ class ProductOrder(models.Model):
     product = models.ForeignKey(Product, verbose_name=_('Ürün'), null=False, blank=False,
                                 on_delete=models.CASCADE)
     name = models.CharField(_('Ürün İsmi'), null=True, blank=True, max_length=150)
-    quantity = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=5,
+    quantity = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2,
                                    max_digits=10)
-    unit_price = models.DecimalField(_('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
+    total = models.DecimalField(_('Siparişin Toplam Fiyatı'), null=True, blank=True, decimal_places=2, max_digits=10)
     status = models.CharField(_('Ürün Siparişin Durumu'), choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
@@ -67,12 +67,14 @@ class ProductOrder(models.Model):
 class RawOrder(models.Model):
     supplier = models.ForeignKey(Supplier, verbose_name=_('Tedarikçi'), null=False, blank=False,
                                  on_delete=models.CASCADE)
-    raw = models.ForeignKey(Raw, verbose_name=_('Hammadde'), null=False, blank=False,
+    raw = models.ForeignKey(Raw, verbose_name=_('Ham madde'), null=False, blank=False,
                             on_delete=models.CASCADE)
-    name = models.CharField(_('Hammadde İsmi'), null=True, blank=True, max_length=150)
-    quantity = models.DecimalField(_('Siparişteki Hammadde Sayısı'), null=True, blank=True, decimal_places=5,
-                                    max_digits=10)
-    status = models.CharField(_('Hammadde Siparişin Durumu'), choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
+    name = models.CharField(_('Ham madde İsmi'), null=True, blank=True, max_length=150)
+    quantity = models.DecimalField(_('Siparişteki Ham madde Sayısı'), null=True, blank=True, decimal_places=2,
+                                   max_digits=10)
+    total = models.DecimalField(_('Siparişin Toplam Maliyeti'), null=True, blank=True, decimal_places=2, max_digits=10)
+    status = models.CharField(_('Ham madde Siparişin Durumu'), choices=RAW_ORDER_STATUS, default=WAITING,
+                              max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
@@ -92,8 +94,8 @@ class Budget(models.Model):
                                   on_delete=models.CASCADE)
     user = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
                              on_delete=models.CASCADE)
-    total_income = models.DecimalField(_('Toplam Gelir'), null=True, blank=True, decimal_places=5, max_digits=10)
-    total_outcome = models.DecimalField(_('Toplam Gider'), null=True, blank=True, decimal_places=5, max_digits=10)
+    total_income = models.DecimalField(_('Toplam Gelir'), null=True, blank=True, decimal_places=2, max_digits=10)
+    total_outcome = models.DecimalField(_('Toplam Gider'), null=True, blank=True, decimal_places=2, max_digits=10)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
@@ -104,6 +106,18 @@ class Budget(models.Model):
 
     def __str__(self):
         return '{}'.format(self.user)
+
+
+@receiver(pre_save, sender=ProductOrder)
+def set_product_order_total(sender, instance, **kwargs):
+    print(instance.quantity)
+    print(instance.product.unit_price)
+    instance.total = instance.product.unit_price * instance.quantity
+
+
+@receiver(pre_save, sender=RawOrder)
+def set_raw_order_total(sender, instance, **kwargs):
+    instance.total = instance.raw.unit_price * instance.quantity
 
 
 @receiver(pre_save, sender=Budget)
