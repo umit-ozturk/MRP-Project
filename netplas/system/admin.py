@@ -1,5 +1,5 @@
 from django.contrib import admin
-from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
+from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, Product
 
 
 class ClientAdmin(admin.ModelAdmin):
@@ -13,17 +13,18 @@ class SupplierAdmin(admin.ModelAdmin):
 
 
 class ProductOrderAdmin(admin.ModelAdmin):
-    list_display = ('client', 'name', 'quantitiy', 'status', 'created_at', )
+    list_display = ('client', 'quantity', 'status', 'created_at', 'product')
     search_fields = ('name', 'status', )
 
 
 class RawOrderAdmin(admin.ModelAdmin):
-    list_display = ('supplier', 'name', 'quantitiy', 'status', 'created_at',)
+    list_display = ('supplier', 'quantity', 'status', 'created_at', 'raw')
     search_fields = ('name', 'status', )
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('product_order', 'raw_order', 'user', 'total_income', 'total_outcome', 'created_at', 'updated_at',)
+    list_display = ('product_order', 'raw_order', 'user',
+                    'total_income', 'total_outcome', 'created_at', 'updated_at',)
     search_fields = ('user', )
 
 

@@ -23,7 +23,6 @@ def create_profile(user, params):
             params["user"].pop("password_again")
             profile = UserProfile(**params["user"])
             profile.save()
-            return profile
     except Exception as ex:
         raise Exception(ex)
 

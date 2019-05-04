@@ -26,12 +26,16 @@ class SupplierSerializer(serializers.ModelSerializer):
 
 
 class RawOrderSerializer(serializers.ModelSerializer):
+    supplier = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = RawOrder
-        fields = ('id', 'name', 'status', 'created_at', 'updated_at', )
+        fields = ('id', 'name', 'status', 'supplier', 'quantity', 'unit_price', 'created_at', 'updated_at', )
+
+    def get_supplier(self):
+        pass
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
@@ -45,7 +49,7 @@ class ProductOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductOrder
-        fields = ('id', 'name', 'status', 'created_at', 'updated_at', )
+        fields = ('id', 'name', 'status', 'client', 'quantity', 'unit_price', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y")
