@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save
 from system.constant import *
 from product.models import Product, Raw
 from profile.models import UserProfile
@@ -9,10 +9,10 @@ from decimal import Decimal
 
 
 class Client(models.Model):
-    email = models.EmailField('E-posta', unique=True, null=False, blank=False)
+    email = models.EmailField(_('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
-    surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
-    phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
+    surname = models.CharField(_('Soyisim'), null=True, blank=True, max_length=75)
+    phone = models.CharField(_('Telefon'), null=True, blank=True, max_length=75)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
@@ -26,10 +26,10 @@ class Client(models.Model):
 
 
 class Supplier(models.Model):
-    email = models.EmailField('E-posta', unique=True, null=False, blank=False)
+    email = models.EmailField(_('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
-    surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
-    phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
+    surname = models.CharField(_('Soyisim'), null=True, blank=True, max_length=75)
+    phone = models.CharField(_('Telefon'), null=True, blank=True, max_length=75)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
@@ -110,8 +110,6 @@ class Budget(models.Model):
 
 @receiver(pre_save, sender=ProductOrder)
 def set_product_order_total(sender, instance, **kwargs):
-    print(instance.quantity)
-    print(instance.product.unit_price)
     instance.total = instance.product.unit_price * instance.quantity
 
 
