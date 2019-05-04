@@ -246,7 +246,17 @@ CreateRawOrderSchema = ManualSchema(fields=[
 
 DamagedCreateRawOrderSchema = ManualSchema(fields=[
     coreapi.Field(
-        'raw',
+        'raw_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
+
+
+DamagedCreateProductOrderSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'product_name',
         required=True,
         location="form",
         schema=coreschema.String()

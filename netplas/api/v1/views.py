@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
-    CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema
+    CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
@@ -19,7 +19,7 @@ from product.models import Product, Raw, DamagedProduct, DamagedRaw
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer
-
+from profile.models import UserProfile
 
 @api_view(['GET'])
 def test_view():
@@ -98,7 +98,7 @@ def create_product_stock_view(request):
 class ProductStockUpdateAPIView(UpdateAPIView):
     serializer_class = ProductStockSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateProductStockSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -160,7 +160,7 @@ def create_raw_stock_view(request):
 class RawStockUpdateAPIView(UpdateAPIView):
     serializer_class = RawStockSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateRawStockSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -232,7 +232,7 @@ def create_product_view(request):
 class ProductUpdateAPIView(UpdateAPIView):
     serializer_class = ProductSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateProductSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -303,7 +303,7 @@ def create_raw_view(request):
 class RawUpdateAPIView(UpdateAPIView):
     serializer_class = RawSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateRawSchema
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
@@ -366,7 +366,7 @@ def create_client_view(request):
 class ClientUpdateAPIView(UpdateAPIView):
     serializer_class = ClientSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateClientSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -429,7 +429,7 @@ def create_supplier_view(request):
 class SupplierUpdateAPIView(UpdateAPIView):
     serializer_class = SupplierSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateSupplierSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -482,7 +482,8 @@ def create_product_order_view(request):  # Testing doesnt not yet.
     """
     try:
         client = Client.objects.get(email=request.data["client"])
-        product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"])
+        personal = UserProfile.objects.get(tckn=request.data['tckn'])
+        product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"], personal=personal)
         product_order.save()
         return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -492,7 +493,7 @@ def create_product_order_view(request):  # Testing doesnt not yet.
 class ProductOrderUpdateAPIView(UpdateAPIView):
     serializer_class = ProductOrderSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateProductOrderSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -555,7 +556,7 @@ def create_raw_order_view(request):  # Testing doesnt not yet.
 class RawOrderUpdateAPIView(UpdateAPIView):
     serializer_class = RawOrderSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = CreateRawOrderSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
@@ -623,7 +624,7 @@ def create_damaged_raw_view(request):
 class DamagedRawUpdateAPIView(UpdateAPIView):
     serializer_class = DamagedRawSerializer
     authentication_classes = (TokenAuthentication,)
-    http_method_names = ('put',)
+    http_method_names = ('put', 'patch',)
     schema = DamagedCreateRawOrderSchema
     lookup_field = 'id'
     lookup_url_kwarg = 'id'
@@ -645,6 +646,73 @@ class DamagedRawDeleteAPIView(DestroyAPIView):
         except Exception as ex:
             print(str(ex))
             return Response({"detail": _("Hasarlı Ham madde bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+@schema(ProductInfoSchema, )
+def list_damaged_product_info_view(request):
+    """
+    API endpoint that return damaged product and quantity by damaged product name
+    """
+    if request.method == "GET":
+        try:
+            product = Product.objects.get(name=request.data["product_name"])
+            damaged_product_info = DamagedProduct.objects.filter(product=product).order_by('-created_at')
+            if damaged_product_info.count() != 0:
+                damaged_product_info_serializer = DamagedProduct(damaged_product_info, many=True)
+                return Response(damaged_product_info_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Hasarlı ürün bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(DamagedCreateProductOrderSchema, )
+def create_damaged_product_view(request):
+    """
+    API endpoint that create damaged product
+    """
+    try:
+        product = Product.objects.get(name=request.data["product_name"])
+        damaged_product = DamagedProduct(product=product)
+        damaged_product.save()
+        return Response({"detail": _(" adet hasarlı ürün başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
+    except ObjectDoesNotExist:
+        return Response({"detail": _("Hasarlı product deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DamagedProductUpdateAPIView(UpdateAPIView):
+    serializer_class = DamagedProductSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put', 'patch',)
+    schema = DamagedCreateProductOrderSchema
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    queryset = DamagedProduct.objects.all()
+
+
+class DamagedProductDeleteAPIView(DestroyAPIView):
+    serializer_class = DamagedProductSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = DamagedProduct.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": _("Hasarlı ürün başarıyla kaldırıldı.")}, status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": _("Hasarlı ürün bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])

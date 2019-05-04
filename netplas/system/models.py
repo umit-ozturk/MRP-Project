@@ -10,7 +10,8 @@ from django.contrib.postgres.fields import JSONField
 
 
 class Client(models.Model):
-    email = models.EmailField('E-posta', unique=True, null=False, blank=False)
+    email = models.EmailField(
+        _('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
     surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
     phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
@@ -29,7 +30,8 @@ class Client(models.Model):
 
 
 class Supplier(models.Model):
-    email = models.EmailField('E-posta', unique=True, null=False, blank=False)
+    email = models.EmailField(
+        _('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
     surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
     phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
@@ -64,7 +66,9 @@ class ProductOrder(models.Model):
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
         _('Güncellenme Tarihi'), auto_now=True, editable=False)
-    data = JSONField()
+    data = JSONField(blank=True, null=True)
+    total = models.DecimalField(
+        _('Siparişin Toplam Fiyatı'), null=True, blank=True, decimal_places=2, max_digits=10)
 
     class Meta:
         verbose_name = _('Ürün Siparişi')
@@ -72,13 +76,13 @@ class ProductOrder(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return '{}'.format(self.product.name)
 
 
 class RawOrder(models.Model):
     supplier = models.ForeignKey(Supplier, verbose_name=_('Tedarikçi'), null=False, blank=False,
                                  on_delete=models.CASCADE)
-    raw = models.ForeignKey(Raw, verbose_name=_('Hammadde'), null=False, blank=False,
+    raw = models.ForeignKey(Raw, verbose_name=_('Ham madde'), null=False, blank=False,
                             on_delete=models.CASCADE)
     personal = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
                                  on_delete=models.CASCADE)
@@ -90,7 +94,9 @@ class RawOrder(models.Model):
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
         _('Güncellenme Tarihi'), auto_now=True, editable=False)
-    data = JSONField()
+    data = JSONField(blank=True, null=True)
+    total = models.DecimalField(_('Siparişin Toplam Maliyeti'),
+                                null=True, blank=True, decimal_places=2, max_digits=10)
 
     class Meta:
         verbose_name = _('Hammadde Siparişi')
@@ -98,7 +104,7 @@ class RawOrder(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return '{}'.format(self.raw.name)
 
 
 class Budget(models.Model):
@@ -124,6 +130,16 @@ class Budget(models.Model):
 
     def __str__(self):
         return '{}'.format(self.user)
+
+
+@receiver(pre_save, sender=ProductOrder)
+def set_product_order_total(sender, instance, **kwargs):
+    instance.total = instance.product.unit_price * instance.quantity
+
+
+@receiver(pre_save, sender=RawOrder)
+def set_raw_order_total(sender, instance, **kwargs):
+    instance.total = instance.raw.unit_price * instance.quantity
 
 
 @receiver(pre_save, sender=Budget)
