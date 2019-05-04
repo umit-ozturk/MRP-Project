@@ -8,7 +8,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('email', 'name', 'surname', 'phone', 'created_at',)
+    list_display = ('email', 'name', 'surname', 'phone', 'created_at', )
     search_fields = ('name', 'surname', 'phone', )
 
 
@@ -18,12 +18,13 @@ class ProductOrderAdmin(admin.ModelAdmin):
 
 
 class RawOrderAdmin(admin.ModelAdmin):
-    list_display = ('supplier', 'name', 'quantity', 'total', 'status', 'created_at',)
+    list_display = ('supplier', 'name', 'quantity', 'total', 'status', 'created_at', )
     search_fields = ('name', 'status', )
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('product_order', 'raw_order', 'user', 'total_income', 'total_outcome', 'created_at', 'updated_at',)
+    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'total', 'created_at',
+                    'updated_at', )
     search_fields = ('user', )
 
 

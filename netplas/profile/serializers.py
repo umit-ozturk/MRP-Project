@@ -12,7 +12,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'name', 'surname', 'type', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")

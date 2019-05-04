@@ -4,7 +4,6 @@ from api.v1.views import *
 app_name = 'api'
 
 urlpatterns = [
-    path('test/', test_view, name='test_service'),
     path('register/', register_view, name='register_service'),
     path('login/', login_view, name='login_service'),
 

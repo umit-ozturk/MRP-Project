@@ -14,10 +14,10 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ("id", 'stock', 'name', 'amount', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
 
 class RawSerializer(serializers.ModelSerializer):
@@ -30,10 +30,10 @@ class RawSerializer(serializers.ModelSerializer):
         fields = ("id", 'stock', 'name', 'amount', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
 
 class DamagedProductSerializer(serializers.ModelSerializer):
@@ -46,10 +46,10 @@ class DamagedProductSerializer(serializers.ModelSerializer):
         fields = ("id", 'product', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
 
 class DamagedRawSerializer(serializers.ModelSerializer):
@@ -62,7 +62,7 @@ class DamagedRawSerializer(serializers.ModelSerializer):
         fields = ("id", 'raw', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")

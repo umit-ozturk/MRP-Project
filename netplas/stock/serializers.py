@@ -12,10 +12,10 @@ class ProductStockSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
 
 class RawStockSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class RawStockSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.created_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
-        return _date(obj.updated_at, "d F, Y")
+        return _date(obj.updated_at, "d F, Y - H:m")

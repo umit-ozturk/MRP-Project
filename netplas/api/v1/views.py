@@ -18,18 +18,7 @@ from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, DamagedProduct, DamagedRaw
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
-    BudgetSerializer
-
-
-@api_view(['GET'])
-def test_view():
-    """
-    API endpoint that just test.
-    """
-    try:
-        return Response({"message": _("Hello World")}, status=status.HTTP_200_OK)
-    except Exception as ex:
-        return Response({"message": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+    BudgetSerializer, BudgetTotalSerializer
 
 
 @api_view(['POST'])
@@ -722,9 +711,9 @@ def budget_total_view(request):
     """
     if request.method == "GET":
         try:
-            budget = Budget.objects.all().order_by('-created_at')
-            if budget.count() != 0:
-                budget_serializer = BudgetSerializer(budget, many=True)
+            if Budget.objects.all().count() != 0:
+                budget = Budget.objects.all().order_by('-created_at')[0]
+                budget_serializer = BudgetTotalSerializer(budget, many=False)
                 return Response(budget_serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response({"detail": _("Bütçe bilgisi bulunamadı.")},
@@ -740,7 +729,7 @@ def budget_income_detail_and_total_view(request):
     """
     API endpoint that return total income money on system
     """
-    if request.method == "GET":  # Total money recevier should be appended to model
+    if request.method == "GET":  # Total money receiver should be appended to model
         try:
             budget = Budget.objects.exclude(product_order__isnull=True).order_by('-created_at')
             if budget.count() != 0:
@@ -760,7 +749,7 @@ def budget_outcome_detail_and_total_view(request):
     """
     API endpoint that return total outcome money on system
     """
-    if request.method == "GET":  # Total money recevier should be appended to model
+    if request.method == "GET":  # Total money receiver should be appended to model
         try:
             budget = Budget.objects.exclude(raw_order__isnull=True).order_by('-created_at')
             if budget.count() != 0:
