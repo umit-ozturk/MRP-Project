@@ -19,6 +19,7 @@ from product.models import Product, Raw, DamagedProduct, DamagedRaw
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer, BudgetTotalSerializer
+from profile.models import UserProfile
 
 
 @api_view(['POST'])
@@ -471,7 +472,8 @@ def create_product_order_view(request):  # Testing doesnt not yet.
     """
     try:
         client = Client.objects.get(email=request.data["client"])
-        product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"])
+        personal = UserProfile.objects.get(tckn=request.data['tckn'])
+        product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"], personal=personal)
         product_order.save()
         return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:

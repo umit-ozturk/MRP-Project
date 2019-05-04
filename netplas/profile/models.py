@@ -4,6 +4,7 @@ from profile.managers import AmbarUserManager
 from profile.constant import *
 
 
+
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('E-posta', unique=True, null=False, blank=False)
     name = models.CharField('İsim', null=True, blank=True, max_length=75)

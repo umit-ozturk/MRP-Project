@@ -6,13 +6,14 @@ from system.constant import *
 from product.models import Product, Raw
 from profile.models import UserProfile
 from decimal import Decimal
+from django.contrib.postgres.fields import JSONField
 
 
 class Client(models.Model):
     email = models.EmailField(_('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
-    surname = models.CharField(_('Soyisim'), null=True, blank=True, max_length=75)
-    phone = models.CharField(_('Telefon'), null=True, blank=True, max_length=75)
+    surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
+    phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
@@ -26,12 +27,15 @@ class Client(models.Model):
 
 
 class Supplier(models.Model):
-    email = models.EmailField(_('E-posta'), unique=True, null=False, blank=False)
+    email = models.EmailField(
+        _('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
-    surname = models.CharField(_('Soyisim'), null=True, blank=True, max_length=75)
-    phone = models.CharField(_('Telefon'), null=True, blank=True, max_length=75)
-    created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+    surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
+    phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
         verbose_name = _('Tedarikçi')
@@ -47,15 +51,16 @@ class ProductOrder(models.Model):
                                on_delete=models.CASCADE)
     product = models.ForeignKey(Product, verbose_name=_('Ürün'), null=False, blank=False,
                                 on_delete=models.CASCADE)
-    user = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
-                             on_delete=models.CASCADE)
-    name = models.CharField(_('Ürün İsmi'), null=True, blank=True, max_length=150)
-    quantity = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2,
-                                   max_digits=10)
-    total = models.DecimalField(_('Siparişin Toplam Fiyatı'), null=True, blank=True, decimal_places=2, max_digits=10)
+    personal = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
+                                 on_delete=models.CASCADE)
+    order_title = models.CharField(_('Sipariş Başlığı'), null=True, blank=True, max_length=150)
+    quantity = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2, max_digits=10)
+    unit_price = models.DecimalField(_('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
     status = models.CharField(_('Ürün Siparişin Durumu'), choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+    data = JSONField(blank=True, null=True)
+    total = models.DecimalField(_('Siparişin Toplam Fiyatı'), null=True, blank=True, decimal_places=2, max_digits=10)
 
     class Meta:
         verbose_name = _('Ürün Siparişi')
@@ -63,7 +68,7 @@ class ProductOrder(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return '{}'.format(self.product.name)
 
 
 class RawOrder(models.Model):
@@ -71,16 +76,19 @@ class RawOrder(models.Model):
                                  on_delete=models.CASCADE)
     raw = models.ForeignKey(Raw, verbose_name=_('Ham madde'), null=False, blank=False,
                             on_delete=models.CASCADE)
-    user = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
-                             on_delete=models.CASCADE)
-    name = models.CharField(_('Ham madde İsmi'), null=True, blank=True, max_length=150)
+    personal = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
+                                 on_delete=models.CASCADE)
+    order_title = models.CharField(_('Sipariş Başlığı'), null=True, blank=True, max_length=150)
     quantity = models.DecimalField(_('Siparişteki Ham madde Sayısı'), null=True, blank=True, decimal_places=2,
                                    max_digits=10)
+    status = models.CharField(_('Hammadde Siparişin Durumu'),
+                              choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
+    data = JSONField(blank=True, null=True)
     total = models.DecimalField(_('Siparişin Toplam Maliyeti'), null=True, blank=True, decimal_places=2, max_digits=10)
-    status = models.CharField(_('Ham madde Siparişin Durumu'), choices=RAW_ORDER_STATUS, default=WAITING,
-                              max_length=150)
-    created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
         verbose_name = _('Hammadde Siparişi')
@@ -88,7 +96,7 @@ class RawOrder(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return '{}'.format(self.raw.name)
 
 
 class Budget(models.Model):
