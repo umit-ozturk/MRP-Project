@@ -1,21 +1,25 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.db.models import Sum
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from system.constant import *
-from product.models import Product, Raw
+from product.models import Product, Raw, RawForProduction
 from profile.models import UserProfile
 from decimal import Decimal
 from django.contrib.postgres.fields import JSONField
 
 
 class Client(models.Model):
-    email = models.EmailField(_('E-posta'), unique=True, null=False, blank=False)
+    email = models.EmailField(
+        _('E-posta'), unique=True, null=False, blank=False)
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
     surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
     phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
-    created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
         verbose_name = _('Müşteri')
@@ -53,14 +57,21 @@ class ProductOrder(models.Model):
                                 on_delete=models.CASCADE)
     personal = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
                                  on_delete=models.CASCADE)
-    order_title = models.CharField(_('Sipariş Başlığı'), null=True, blank=True, max_length=150)
-    quantity = models.DecimalField(_('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2, max_digits=10)
-    unit_price = models.DecimalField(_('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
-    status = models.CharField(_('Ürün Siparişin Durumu'), choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
-    created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+    order_title = models.CharField(
+        _('Sipariş Başlığı'), null=True, blank=True, max_length=150)
+    quantity = models.DecimalField(
+        _('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2, max_digits=10)
+    unit_price = models.DecimalField(
+        _('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
+    status = models.CharField(_('Ürün Siparişin Durumu'),
+                              choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
     data = JSONField(blank=True, null=True)
-    total = models.DecimalField(_('Siparişin Toplam Fiyatı'), null=True, blank=True, decimal_places=2, max_digits=10)
+    total = models.DecimalField(
+        _('Siparişin Toplam Fiyatı'), null=True, blank=True, decimal_places=2, max_digits=10)
 
     class Meta:
         verbose_name = _('Ürün Siparişi')
@@ -78,7 +89,8 @@ class RawOrder(models.Model):
                             on_delete=models.CASCADE)
     personal = models.ForeignKey(UserProfile, verbose_name=_('Kullanıcı'), null=True, blank=True,
                                  on_delete=models.CASCADE)
-    order_title = models.CharField(_('Sipariş Başlığı'), null=True, blank=True, max_length=150)
+    order_title = models.CharField(
+        _('Sipariş Başlığı'), null=True, blank=True, max_length=150)
     quantity = models.DecimalField(_('Siparişteki Ham madde Sayısı'), null=True, blank=True, decimal_places=2,
                                    max_digits=10)
     status = models.CharField(_('Hammadde Siparişin Durumu'),
@@ -88,7 +100,8 @@ class RawOrder(models.Model):
     updated_at = models.DateTimeField(
         _('Güncellenme Tarihi'), auto_now=True, editable=False)
     data = JSONField(blank=True, null=True)
-    total = models.DecimalField(_('Siparişin Toplam Maliyeti'), null=True, blank=True, decimal_places=2, max_digits=10)
+    total = models.DecimalField(_('Siparişin Toplam Maliyeti'),
+                                null=True, blank=True, decimal_places=2, max_digits=10)
 
     class Meta:
         verbose_name = _('Hammadde Siparişi')
@@ -104,11 +117,16 @@ class Budget(models.Model):
                                       on_delete=models.CASCADE)
     raw_order = models.ForeignKey(RawOrder, verbose_name=_('Hammadde Siparişi'), null=True, blank=True,
                                   on_delete=models.CASCADE)
-    total_income = models.DecimalField(_('Toplam Gelir'), null=True, blank=True, decimal_places=2, max_digits=10)
-    total_outcome = models.DecimalField(_('Toplam Gider'), null=True, blank=True, decimal_places=2, max_digits=10)
-    total = models.DecimalField(_('Genel Toplam'), null=True, blank=True, decimal_places=2, max_digits=10)
-    created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+    total_income = models.DecimalField(
+        _('Toplam Gelir'), null=True, blank=True, decimal_places=2, max_digits=10)
+    total_outcome = models.DecimalField(
+        _('Toplam Gider'), null=True, blank=True, decimal_places=2, max_digits=10)
+    total = models.DecimalField(
+        _('Genel Toplam'), null=True, blank=True, decimal_places=2, max_digits=10)
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
 
     class Meta:
         verbose_name = _('Gelir/Gider')
@@ -119,6 +137,7 @@ class Budget(models.Model):
         return '{}'.format(self.total)
 
 
+"""
 @receiver(pre_save, sender=ProductOrder)
 def set_product_order_total(sender, instance, **kwargs):
     instance.total = instance.product.unit_price * instance.quantity
@@ -179,3 +198,44 @@ def set_budget_total(sender, instance, **kwargs):
     total_outcome = Budget.objects.all().exclude(raw_order__isnull=True).first()
     total_income = Budget.objects.all().exclude(product_order__isnull=True).first()
     instance.total = total_income.total_income + total_outcome.total_outcome
+"""
+
+
+@receiver(post_save, sender=RawOrder)
+def set_budget_raw(sender, instance, **kwargs):
+    if instance.status == SUCCESS:
+        budget = Budget.objects.filter()
+        if budget.exists():
+            total = budget.first().total
+        else:
+            total = 0
+        Budget.objects.create(
+            raw_order=instance,
+            total_income=instance.total,
+            total=total - instance.total
+        )
+
+
+@receiver(post_save, sender=ProductOrder)
+def set_budget(sender, instance, **kwargs):
+    if instance.status == SUCCESS:
+        budget = Budget.objects.filter()
+        if budget.exists():
+            total = budget.first().total
+        else:
+            total = 0
+        Budget.objects.create(
+            product_order=instance,
+            total_outcome=instance.total,
+            total=total + instance.total
+        )
+
+
+@receiver(post_save, sender=ProductOrder)
+def remove_raw_stock(sender, instance, **kwargs):
+    if instance.status == WAITING and kwargs['created']:
+        raws = instance.product.raws.all()
+        for raw in raws:
+            total = instance.quantity * raw.quantity_for_prod
+            raw.raw.stock.count -= total
+            raw.raw.stock.save()
