@@ -129,13 +129,13 @@ CreateProductSchema = ManualSchema(fields=[
 
 CreateProductTemplateSchema = ManualSchema(fields=[
     coreapi.Field(
-        name='name',
+        name='product_name',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        name='raw',
+        name='raw_name',
         required=True,
         location="form",
         schema=coreschema.String()
