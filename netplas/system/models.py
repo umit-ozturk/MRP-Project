@@ -211,7 +211,7 @@ def set_budget_raw(sender, instance, **kwargs):
             total = 0
         Budget.objects.create(
             raw_order=instance,
-            total_income=instance.total,
+            total_outcome=instance.total,
             total=total - instance.total
         )
 
@@ -226,7 +226,7 @@ def set_budget(sender, instance, **kwargs):
             total = 0
         Budget.objects.create(
             product_order=instance,
-            total_outcome=instance.total,
+            total_income=instance.total,
             total=total + instance.total
         )
 
@@ -239,3 +239,12 @@ def remove_raw_stock(sender, instance, **kwargs):
             total = instance.quantity * raw.quantity_for_prod
             raw.raw.stock.count -= total
             raw.raw.stock.save()
+
+
+@receiver(post_save, sender=RawOrder)
+def add_raw_stock(sender, instance, **kwargs):
+    if instance.status == SUCCESS:
+        raw = instance.raw
+        stock = raw.stock
+        stock.count += instance.quantity
+        stock.save()
