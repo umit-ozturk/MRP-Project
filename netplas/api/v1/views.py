@@ -543,8 +543,8 @@ def list_product_order_view(request):
     """
     if request.method == "GET":
         try:
-            product_order = ProductOrder.objects.all().order_by('-created_at')
-            if product_order.count() != 0:
+            product_order = ProductOrder.objects.filter().select_related('product', 'client', 'personal').order_by('-created_at')
+            if product_order.exists():
                 product_order_serializer = ProductOrderSerializer(product_order, many=True)
                 return Response(product_order_serializer.data, status=status.HTTP_200_OK)
             else:
@@ -607,8 +607,8 @@ def list_raw_order_view(request):
     """
     if request.method == "GET":
         try:
-            raw_order = RawOrder.objects.all().order_by('-created_at')
-            if raw_order.count() != 0:
+            raw_order = RawOrder.objects.filter().select_related('supplier', 'personal', 'raw').order_by('-created_at')
+            if raw_order.exists():
                 raw_order_serializer = RawOrderSerializer(raw_order, many=True)
                 return Response(raw_order_serializer.data, status=status.HTTP_200_OK)
             else:
@@ -804,9 +804,10 @@ def budget_total_view(request):
     API endpoint that return total money on system
     """
     if request.method == "GET":
+        budget = Budget.objects.filter()
         try:
-            if Budget.objects.all().count() != 0:
-                budget = Budget.objects.all().order_by('-created_at')[0]
+            if budget.exists():
+                budget = budget.first()
                 budget_serializer = BudgetTotalSerializer(budget, many=False)
                 return Response(budget_serializer.data, status=status.HTTP_200_OK)
             else:
@@ -826,7 +827,7 @@ def budget_income_detail_and_total_view(request):
     if request.method == "GET":  # Total money receiver should be appended to model
         try:
             budget = Budget.objects.exclude(product_order__isnull=True).order_by('-created_at')
-            if budget.count() != 0:
+            if budget.exists():
                 budget_serializer = BudgetSerializer(budget, many=True)
                 return Response(budget_serializer.data, status=status.HTTP_200_OK)
             else:
@@ -846,7 +847,7 @@ def budget_outcome_detail_and_total_view(request):
     if request.method == "GET":  # Total money receiver should be appended to model
         try:
             budget = Budget.objects.exclude(raw_order__isnull=True).order_by('-created_at')
-            if budget.count() != 0:
+            if budget.exists():
                 budget_serializer = BudgetSerializer(budget, many=True)
                 return Response(budget_serializer.data, status=status.HTTP_200_OK)
             else:

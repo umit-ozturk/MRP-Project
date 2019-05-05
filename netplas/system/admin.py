@@ -1,5 +1,5 @@
 from django.contrib import admin
-from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, Product
+from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, Product, RawForProduction
 
 
 class ClientAdmin(admin.ModelAdmin):
