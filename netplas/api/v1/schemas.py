@@ -113,12 +113,17 @@ CreateProductSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
     coreapi.Field(
-        name='price',
+        'unit_price',
         required=True,
         location="form",
         schema=coreschema.Integer()
     ),
-
+    coreapi.Field(
+        'amount',
+        required=True,
+        location="form",
+        schema=coreschema.Integer()
+    ),
 ])
 
 
@@ -136,7 +141,13 @@ CreateRawSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'quantity',
+        'unit_price',
+        required=True,
+        location="form",
+        schema=coreschema.Integer()
+    ),
+    coreapi.Field(
+        'amount',
         required=True,
         location="form",
         schema=coreschema.Integer()

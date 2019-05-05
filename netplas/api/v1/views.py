@@ -58,16 +58,13 @@ def list_product_stock_view(request):
     """
     if request.method == "GET":
         try:
-            product_stock = ProductStock.objects.all().order_by('-created_at')
-            if product_stock.count() != 0:
-                product_stock_serializer = ProductStockSerializer(product_stock, many=True)
-                return Response(product_stock_serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response({"detail": _("Daha önce herhangi bir ürün deposu oluşturulmadı.")},
-                                status=status.HTTP_200_OK)
+            product_stock = ProductStock.objects.all().order_by('-created_at')[0]
+            product_stock_serializer = ProductStockSerializer(product_stock, many=False)
+            return Response(product_stock_serializer.data, status=status.HTTP_200_OK)
         except Exception as ex:
             print(str(ex))
-            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": _("Daha önce herhangi bir ürün deposu oluşturulmadı.")},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -78,8 +75,9 @@ def create_product_stock_view(request):
     API endpoint that create product stock
     """
     try:
-        product_stock = ProductStock(name=request.data)
-        product_stock.save()
+        raw_stock, created = ProductStock.objects.get_or_create(name=request.data['product_stock_name'])
+        if not created:
+            return Response({"detail": _("Ürün deposu zaten mevcut.")}, status=status.HTTP_406_NOT_ACCEPTABLE)
         return Response({"detail": _("Ürün deposu başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
@@ -140,8 +138,9 @@ def create_raw_stock_view(request):
     API endpoint that create raw stock
     """
     try:
-        raw_stock = RawStock(name=request.data)
-        raw_stock.save()
+        raw_stock, created = RawStock.objects.get_or_create(name=request.data['raw_stock_name'])
+        if not created:
+            return Response({"detail": _("Ham madde deposu zaten mevcut.")}, status=status.HTTP_200_OK)
         return Response({"detail": _("Ham madde deposu başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
@@ -275,15 +274,13 @@ def create_raw_view(request):
     API endpoint that create raw
     """
     try:
-        quantity = request.data["quantity"]
-        if int(quantity) > 0:
-            raw_stock = RawStock.objects.get(name=request.data["raw_stock_name"])
-            raw = Raw(stock=raw_stock, name=request.data["raw_name"], quantity=int(quantity))
-            raw.save()
-            return Response({"detail": _(str(quantity) + " adet ham madde başarıyla oluşturuldu.")},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": _("Ham madde miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
+        param = request.data
+        raw_stock = RawStock.objects.get(name=param["raw_stock_name"])
+        raw = Raw(stock=raw_stock, name=param["raw_name"], amount=param["amount"],
+                  unit_price=param["unit_price"])
+        raw.save()
+        return Response({"detail": _("Ham madde başarıyla oluşturuldu.")},
+                        status=status.HTTP_200_OK)
     except ObjectDoesNotExist:
         return Response({"detail": _("Ham madde deposu bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as ex:
