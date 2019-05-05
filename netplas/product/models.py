@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from stock.models import ProductStock, RawStock
+from decimal import Decimal
 
 
 class Raw(models.Model):
@@ -25,14 +26,6 @@ class Raw(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
-    class Meta:
-        verbose_name = _('Üretim için Ham Madde Miktarı')
-        verbose_name_plural = _('Üretim için Ham Madde Miktarları')
-        ordering = ('-created_at',)
-
-    def __str__(self):
-        return '{}'.format(self.name)
-
 
 class Product(models.Model):
     stock = models.ForeignKey(
@@ -42,7 +35,7 @@ class Product(models.Model):
     unit_price = models.DecimalField(
         _('Ürünün Birim Fiyati'), null=True, blank=True, decimal_places=2, max_digits=10)
     amount = models.DecimalField(_('Ambalajdaki Ürün Sayısı'), null=True, blank=True, decimal_places=2,
-                                 max_digits=10)
+                                 max_digits=10, default=Decimal(1))
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -97,8 +90,16 @@ class RawForProduction(models.Model):
     raw = models.ForeignKey(Raw, on_delete=models.CASCADE,
                             verbose_name=_('Ham madde'), related_name='products')
     quantity_for_prod = models.IntegerField(
-        _('Üretim için Gereken Ham maddenin Miktari'))
+        _('Üretim için Gereken Ham maddenin Miktari'), default=1)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
         _('Güncellenme Tarihi'), auto_now=True, editable=False)
+
+    class Meta:
+        verbose_name = _('Üretim için Ham Madde Miktarı')
+        verbose_name_plural = _('Üretim için Ham Madde Miktarları')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return '{}'.format(self.product)

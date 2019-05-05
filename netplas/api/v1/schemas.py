@@ -57,7 +57,7 @@ ProductInfoSchema = ManualSchema(fields=[
     coreapi.Field(
         'product_name',
         required=True,
-        location="form",
+        location="query",
         schema=coreschema.String()
     ),
 ])
@@ -67,7 +67,7 @@ RawInfoSchema = ManualSchema(fields=[
     coreapi.Field(
         'raw_name',
         required=True,
-        location="form",
+        location="query",
         schema=coreschema.String()
     ),
 ])
@@ -101,12 +101,6 @@ CreateProductSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
     coreapi.Field(
-        name='raw_name',
-        required=True,
-        location="form",
-        schema=coreschema.String()
-    ),
-    coreapi.Field(
         name='product_name',
         required=True,
         location="form",
@@ -120,7 +114,7 @@ CreateProductSchema = ManualSchema(fields=[
     ),
     coreapi.Field(
         'amount',
-        required=True,
+        required=False,
         location="form",
         schema=coreschema.Integer()
     ),
@@ -235,13 +229,25 @@ CreateSupplierSchema = ManualSchema(fields=[
 
 CreateProductOrderSchema = ManualSchema(fields=[
     coreapi.Field(
-        'client',
+        'client_email',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'name',
+        'product_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'user_email',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'order_title',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -251,19 +257,37 @@ CreateProductOrderSchema = ManualSchema(fields=[
         required=True,
         location="form",
         schema=coreschema.Integer()
+    ),
+    coreapi.Field(
+        'status',
+        required=False,
+        location="form",
+        schema=coreschema.String()
     ),
 ])
 
 
 CreateRawOrderSchema = ManualSchema(fields=[
     coreapi.Field(
-        'supplier',
+        'supplier_email',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'name',
+        'raw_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'user_email',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'order_title',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -273,6 +297,12 @@ CreateRawOrderSchema = ManualSchema(fields=[
         required=True,
         location="form",
         schema=coreschema.Integer()
+    ),
+    coreapi.Field(
+        'status',
+        required=False,
+        location="form",
+        schema=coreschema.String()
     ),
 ])
 

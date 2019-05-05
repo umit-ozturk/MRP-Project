@@ -39,9 +39,17 @@ class RawForProdSerializer(serializers.ModelSerializer):
         return _date(obj.updated_at, "d F, Y - H:m")
 
 
+class ExcludeProductRawForProdSerializer(serializers.ModelSerializer):
+    raw = RawStockSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = RawForProduction
+        fields = ("id", 'raw', 'quantity_for_prod', )
+
+
 class ProductSerializer(serializers.ModelSerializer):
     stock = ProductStockSerializer(many=False, read_only=True)
-    raw_for_prod = RawForProdSerializer(many=False, read_only=True)
+    raw_for_prod = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
@@ -49,6 +57,10 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ("id", 'stock', 'raw_for_prod', 'name',
                   'amount', 'created_at', 'updated_at', )
+
+    def get_raw_for_prod(self, obj):
+        raw_recipe = RawForProduction.objects.filter(product__name=obj.name)
+        return ExcludeProductRawForProdSerializer(raw_recipe, many=True).data
 
     def get_created_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")

@@ -26,7 +26,7 @@ class RawOrderAdmin(admin.ModelAdmin):
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'total', 'created_at',
+    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'salaries', 'total', 'created_at',
                     'updated_at', )
     search_fields = ('user', )
 

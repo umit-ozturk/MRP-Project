@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +44,24 @@ INSTALLED_APPS = [
     'system'
 ]
 
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Istanbul'
+
+
+CELERY_BEAT_SCHEDULE = {
+    'task_pay_salaries': {
+        'task': 'system.tasks.task_pay_salaries',
+        'schedule': crontab(minute=0, hour=0, day_of_month=1)
+     },
+    'task_test': {
+        'task': 'netplas.celery.debug_task',
+        'schedule': crontab(minute='*/1')
+    }
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

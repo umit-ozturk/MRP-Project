@@ -22,6 +22,7 @@ from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer, BudgetTotalSerializer
 from profile.models import UserProfile
+from decimal import Decimal
 
 
 @api_view(['POST'])
@@ -185,6 +186,7 @@ def list_product_info_view(request):
     """
     if request.method == "GET":
         try:
+            print("Debug0")
             product_info = Product.objects.filter(name=request.GET.get('product_name')).order_by('-created_at')
             if product_info.count() != 0:
                 product_info_serializer = ProductSerializer(product_info, many=True)
@@ -205,16 +207,12 @@ def create_product_view(request):
     API endpoint that create product
     """
     try:
-        quantity = request.data['quantity']
-        if int(quantity) > 0:
-            product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])
-            raw = Raw.objects.get(name=request.data["raw_name"])
-            product = Product(stock=product_stock, raw=raw, name=request.data["product_name"], quantity=int(quantity))
-            product.save()
-            return Response({"detail": _(str(quantity) + " adet ürün başarıyla oluşturuldu.")},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": _("Ürün miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
+        product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])
+        product = Product(stock=product_stock, name=request.data["product_name"],
+                          unit_price=request.data["unit_price"], amount=request.data['amount'])
+        product.save()
+        return Response({"detail": _("Ürün başarıyla oluşturuldu.")},
+                        status=status.HTTP_200_OK)
     except ObjectDoesNotExist:
         return Response({"detail": _("Ürün deposu bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
     except Exception as ex:
@@ -247,6 +245,7 @@ class ProductDeleteAPIView(DestroyAPIView):
             print(str(ex))
             return Response({"detail": _("Ürün bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
+
 class RawForProductListAPIView(ListAPIView):
     serializer_class = RawForProdSerializer
     queryset = RawForProduction.objects.filter()
@@ -256,6 +255,7 @@ class RawForProductListAPIView(ListAPIView):
         if self.request.GET.get('product_name', None):
             return qs.filter(product__name=self.request.GET.get('product_name')).order_by('-created_at')
         return qs
+
 
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication,))
@@ -267,11 +267,10 @@ def create_product_template_view(request):
     try:
         quantity = request.data['quantity']
         if int(quantity) > 0:
-            #  product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])get all raws (pull list)
             raw = Raw.objects.get(name=request.data["raw_name"])
             product = Product.objects.get(name=request.data['product_name'])
-            product = RawForProduction(raw=raw, product=product, quantity=int(quantity))
-            product.save()
+            raw_for_product = RawForProduction(raw=raw, product=product, quantity_for_prod=int(quantity))
+            raw_for_product.save()
             return Response({"detail": _(str(quantity) + " adet ürün başarıyla oluşturuldu.")},
                             status=status.HTTP_200_OK)
         else:
@@ -309,15 +308,6 @@ class ProductTemplateDeleteAPIView(DestroyAPIView):
             print(str(ex))
             return Response({"detail": _("Ürün ham madde gereklilik şeması bulunamadı.")},
                             status=status.HTTP_404_NOT_FOUND)
-
-
-
-
-
-
-
-
-
 
 
 @api_view(['GET'])
@@ -543,13 +533,21 @@ def create_product_order_view(request):  # Testing doesnt not yet.
     API endpoint that create product order
     """
     try:
-        client = Client.objects.get(email=request.data["client"])
-        personal = UserProfile.objects.get(tckn=request.data['tckn'])
-        product_order = ProductOrder(client=client, name=request.data["name"], quantity=request.data["quantity"], personal=personal)
+        client = Client.objects.get(email=request.data["client_email"])
+        personal = UserProfile.objects.get(email=request.data['user_email'])
+        product = Product.objects.filter(name=request.data["product_name"]).first()
+        if request.data['status']:
+            product_order = ProductOrder(client=client, product=product, quantity=Decimal(request.data["quantity"]),
+                                         personal=personal, order_title=request.data['order_title'],
+                                         status=request.data['status'])
+        else:
+            product_order = ProductOrder(client=client, product=product, quantity=Decimal(request.data["quantity"]),
+                                         personal=personal, order_title=request.data['order_title'])
         product_order.save()
         return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
-        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": _("Girilen bilgiler yanlış veya depoda yeterli hammadde yok.")},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductOrderUpdateAPIView(UpdateAPIView):
@@ -607,12 +605,21 @@ def create_raw_order_view(request):  # Testing doesnt not yet.
     API endpoint that create raw order
     """
     try:
-        supplier = Supplier.objects.get(email=request.data["supplier"])
-        raw_order = RawOrder(supplier=supplier,  name=request.data["name"], quantity=request.data["quantity"])
+        supplier = Supplier.objects.get(email=request.data["supplier_email"])
+        personal = UserProfile.objects.get(email=request.data['user_email'])
+        raw = Raw.objects.filter(name=request.data["raw_name"]).first()
+        if request.data['status']:
+            raw_order = RawOrder(supplier=supplier, raw=raw, quantity=Decimal(request.data["quantity"]),
+                                 personal=personal, order_title=request.data['order_title'],
+                                 status=request.data['status'])
+        else:
+            raw_order = RawOrder(supplier=supplier, product=raw, quantity=Decimal(request.data["quantity"]),
+                                 personal=personal, order_title=request.data['order_title'])
         raw_order.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
-        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": _("Girilen bilgiler yanlış veya hammadde tanımlanmamış.")},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class RawOrderUpdateAPIView(UpdateAPIView):

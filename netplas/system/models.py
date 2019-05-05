@@ -1,6 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models import Sum
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 from system.constant import *
@@ -60,9 +59,7 @@ class ProductOrder(models.Model):
     order_title = models.CharField(
         _('Sipariş Başlığı'), null=True, blank=True, max_length=150)
     quantity = models.DecimalField(
-        _('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2, max_digits=10)
-    unit_price = models.DecimalField(
-        _('Ürünün Birim Fiyatı'), null=True, blank=True, decimal_places=5, max_digits=10)
+        _('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2, max_digits=10, default=Decimal(1))
     status = models.CharField(_('Ürün Siparişin Durumu'),
                               choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(
@@ -92,7 +89,7 @@ class RawOrder(models.Model):
     order_title = models.CharField(
         _('Sipariş Başlığı'), null=True, blank=True, max_length=150)
     quantity = models.DecimalField(_('Siparişteki Ham madde Sayısı'), null=True, blank=True, decimal_places=2,
-                                   max_digits=10)
+                                   max_digits=10, default=Decimal(1))
     status = models.CharField(_('Hammadde Siparişin Durumu'),
                               choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(
@@ -118,11 +115,13 @@ class Budget(models.Model):
     raw_order = models.ForeignKey(RawOrder, verbose_name=_('Hammadde Siparişi'), null=True, blank=True,
                                   on_delete=models.CASCADE)
     total_income = models.DecimalField(
-        _('Toplam Gelir'), null=True, blank=True, decimal_places=2, max_digits=10)
+        _('Toplam Gelir'), null=True, blank=True, decimal_places=2, max_digits=10, default=Decimal(0))
     total_outcome = models.DecimalField(
-        _('Toplam Gider'), null=True, blank=True, decimal_places=2, max_digits=10)
+        _('Toplam Gider'), null=True, blank=True, decimal_places=2, max_digits=10, default=Decimal(0))
+    salaries = models.DecimalField(
+        _('Maaşlar'), null=True, blank=True, decimal_places=2, max_digits=10, default=Decimal(0))
     total = models.DecimalField(
-        _('Genel Toplam'), null=True, blank=True, decimal_places=2, max_digits=10)
+        _('Genel Toplam'), null=True, blank=True, decimal_places=2, max_digits=10, default=Decimal(0))
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -137,7 +136,6 @@ class Budget(models.Model):
         return '{}'.format(self.total)
 
 
-"""
 @receiver(pre_save, sender=ProductOrder)
 def set_product_order_total(sender, instance, **kwargs):
     instance.total = instance.product.unit_price * instance.quantity
@@ -147,6 +145,8 @@ def set_product_order_total(sender, instance, **kwargs):
 def set_raw_order_total(sender, instance, **kwargs):
     instance.total = instance.raw.unit_price * instance.quantity
 
+
+"""
 
 @receiver(post_save, sender=ProductOrder)
 def set_product_order_budget(sender, instance, **kwargs):
@@ -248,3 +248,9 @@ def add_raw_stock(sender, instance, **kwargs):
         stock = raw.stock
         stock.count += instance.quantity
         stock.save()
+
+
+@receiver(pre_save, sender=Budget)
+def set_budget_for_salaries(sender, instance, **kwargs):
+    if instance.salaries:
+        instance.total -= instance.salaries
