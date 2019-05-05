@@ -5,31 +5,31 @@ from rest_framework.schemas import ManualSchema
 
 RegisterSchema = ManualSchema(fields=[
     coreapi.Field(
-        'user["name"]',
+        'name',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'user["surname"]',
+        'surname',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'user["email"]',
+        'email',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'user["password"]',
+        'password',
         required=True,
         location="form",
         schema=coreschema.String()
     ),
     coreapi.Field(
-        'user["password_again"]',
+        'password_again',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -57,7 +57,7 @@ ProductInfoSchema = ManualSchema(fields=[
     coreapi.Field(
         'product_name',
         required=True,
-        location="query",
+        location="form",
         schema=coreschema.String()
     ),
 ])
@@ -67,7 +67,7 @@ RawInfoSchema = ManualSchema(fields=[
     coreapi.Field(
         'raw_name',
         required=True,
-        location="query",
+        location="form",
         schema=coreschema.String()
     ),
 ])
@@ -77,7 +77,7 @@ CreateProductStockSchema = ManualSchema(fields=[
     coreapi.Field(
         'product_stock_name',
         required=True,
-        location="body",
+        location="form",
         schema=coreschema.String()
     ),
 ])
@@ -123,6 +123,28 @@ CreateProductSchema = ManualSchema(fields=[
         required=True,
         location="form",
         schema=coreschema.Integer()
+    ),
+])
+
+
+CreateProductTemplateSchema = ManualSchema(fields=[
+    coreapi.Field(
+        name='name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        name='raw',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        name='quantity',
+        required=True,
+        location="form",
+        schema=coreschema.String()
     ),
 ])
 

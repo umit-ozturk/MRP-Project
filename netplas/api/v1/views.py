@@ -9,13 +9,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
-    CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema
+    CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
+    CreateProductTemplateSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
-from product.serializers import ProductSerializer, RawSerializer, DamagedProductSerializer, DamagedRawSerializer
+from product.serializers import ProductSerializer, RawSerializer, DamagedProductSerializer, DamagedRawSerializer, \
+    RawForProdSerializer
 from stock.models import ProductStock, RawStock
-from product.models import Product, Raw, DamagedProduct, DamagedRaw
+from product.models import Product, Raw, DamagedProduct, DamagedRaw, RawForProduction
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer, BudgetTotalSerializer
@@ -75,6 +77,7 @@ def create_product_stock_view(request):
     API endpoint that create product stock
     """
     try:
+        print(request.data['product_stock_name'])
         raw_stock, created = ProductStock.objects.get_or_create(name=request.data['product_stock_name'])
         if not created:
             return Response({"detail": _("Ürün deposu zaten mevcut.")}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -243,6 +246,98 @@ class ProductDeleteAPIView(DestroyAPIView):
         except Exception as ex:
             print(str(ex))
             return Response({"detail": _("Ürün bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+
+
+
+# not completed
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+@schema(ProductInfoSchema, )
+def list_product_template_view(request):
+    """
+    API endpoint that return product templates
+    """
+    if request.method == "GET":
+        try:
+            product_template_info = RawForProduction.objects.filter(name=request.GET.get('product_name')
+                                                                    ).order_by('-created_at')
+            if product_template_info.count() != 0:
+                product_template_info_serializer = RawForProdSerializer(product_template_info, many=True)
+                return Response(product_template_info_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Ürün bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@schema(CreateProductTemplateSchema, )
+def create_product_template_view(request):
+    """
+    API endpoint that create product template
+    """
+    try:
+        quantity = request.data['quantity']
+        if int(quantity) > 0:
+            #  product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])get all raws (pull list)
+            raw = Raw.objects.get(name=request.data["raw_name"])
+            product = RawForProduction(raw=raw, name=request.data["product_name"], quantity=int(quantity))
+            product.save()
+            return Response({"detail": _(str(quantity) + " adet ürün başarıyla oluşturuldu.")},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": _("Ürün miktarını doğru giriniz.")}, status=status.HTTP_400_BAD_REQUEST)
+    except ObjectDoesNotExist:
+        return Response({"detail": _("Ürün deposu bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as ex:
+        return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductTemplateUpdateAPIView(UpdateAPIView):
+    serializer_class = RawForProdSerializer
+    authentication_classes = (TokenAuthentication,)
+    http_method_names = ('put', 'patch',)
+    schema = CreateProductTemplateSchema
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = RawForProduction.objects.all()
+
+
+class ProductTemplateDeleteAPIView(DestroyAPIView):
+    serializer_class = RawForProdSerializer
+    authentication_classes = (TokenAuthentication,)
+    lookup_url_kwarg = 'id'
+    lookup_field = 'id'
+    queryset = RawForProduction.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": _("Ürün ham madde gereklilik şeması başarıyla kaldırıldı.")},
+                            status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": _("Ürün ham madde gereklilik şeması bulunamadı.")},
+                            status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+
+
+
+
 
 
 @api_view(['GET'])

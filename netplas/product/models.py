@@ -23,6 +23,7 @@ class Raw(models.Model):
 
 
 class RawForProduction(models.Model):
+    name = models.CharField(_('Ürün İsmi'), null=True, blank=True, max_length=150)
     raw = models.ManyToManyField(Raw, verbose_name=_('Ham madde Deposu'))
     quantity_for_prod = models.IntegerField(_('Üretim için Gereken Ham maddenin Miktari'))
     created_at = models.DateTimeField(_('Kayıt Tarihi'), auto_now_add=True, editable=False)

@@ -17,6 +17,13 @@ urlpatterns = [
     path('product/update/<int:id>/', ProductUpdateAPIView.as_view(), name='product_update_service'),
     path('product/delete/<int:id>/', ProductDeleteAPIView.as_view(), name='product_delete_service'),
 
+    path('product_template/list', list_product_template_view, name='product_template_list_service'),
+    path('product_template/create', create_product_template_view, name='product_template_create_service'),
+    path('product_template/update/<int:id>/', ProductTemplateUpdateAPIView.as_view(),
+         name='product_template_update_service'),
+    path('product_template/delete/<int:id>/', ProductTemplateDeleteAPIView.as_view(),
+         name='product_template_delete_service'),
+
     path('raw_stock/list', list_raw_stock_view, name='raw_stock_list_service'),
     path('raw_stock/create', create_raw_stock_view, name='raw_stock_create_service'),
     path('raw_stock/update/<int:id>/', RawStockUpdateAPIView.as_view(), name='raw_stock_update_service'),
