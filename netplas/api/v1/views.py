@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, schema, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import UpdateAPIView, DestroyAPIView
+from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
@@ -247,36 +247,15 @@ class ProductDeleteAPIView(DestroyAPIView):
             print(str(ex))
             return Response({"detail": _("Ürün bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
 
-
-
-
-
-
-
-
-# not completed
-
-@api_view(['GET'])
-@authentication_classes((TokenAuthentication,))
-@schema(ProductInfoSchema, )
-def list_product_template_view(request):
-    """
-    API endpoint that return product templates
-    """
-    if request.method == "GET":
-        try:
-            product_template_info = RawForProduction.objects.filter(name=request.GET.get('product_name')
-                                                                    ).order_by('-created_at')
-            if product_template_info.count() != 0:
-                product_template_info_serializer = RawForProdSerializer(product_template_info, many=True)
-                return Response(product_template_info_serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response({"detail": _("Ürün bilgisi bulunamadı.")},
-                                status=status.HTTP_200_OK)
-        except Exception as ex:
-            print(str(ex))
-            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
-
+class RawForProductListAPIView(ListAPIView):
+    serializer_class = RawForProdSerializer
+    queryset = RawForProduction.objects.filter()
+    
+    def get_queryset(self):
+        qs = super(RawForProductListAPIView, self).get_queryset()
+        if self.request.GET.get('product_name', None):
+            return qs.filter(product__name=self.request.GET.get('product_name')).order_by('-created_at')
+        return qs
 
 @api_view(['POST'])
 @authentication_classes((TokenAuthentication,))
@@ -290,7 +269,8 @@ def create_product_template_view(request):
         if int(quantity) > 0:
             #  product_stock = ProductStock.objects.get(name=request.data["product_stock_name"])get all raws (pull list)
             raw = Raw.objects.get(name=request.data["raw_name"])
-            product = RawForProduction(raw=raw, name=request.data["product_name"], quantity=int(quantity))
+            product = Product.objects.get(name=request.data['product_name'])
+            product = RawForProduction(raw=raw, product=product, quantity=int(quantity))
             product.save()
             return Response({"detail": _(str(quantity) + " adet ürün başarıyla oluşturuldu.")},
                             status=status.HTTP_200_OK)
@@ -543,7 +523,7 @@ def list_product_order_view(request):
     """
     if request.method == "GET":
         try:
-            product_order = ProductOrder.objects.filter().select_related('product', 'client', 'personal').order_by('-created_at')
+            product_order = ProductOrder.objects.filter().select_related('product', 'client', 'personal').order_by()
             if product_order.exists():
                 product_order_serializer = ProductOrderSerializer(product_order, many=True)
                 return Response(product_order_serializer.data, status=status.HTTP_200_OK)
