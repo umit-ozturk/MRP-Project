@@ -61,8 +61,8 @@ def list_product_stock_view(request):
     """
     if request.method == "GET":
         try:
-            product_stock = ProductStock.objects.all().order_by('-created_at')[0]
-            product_stock_serializer = ProductStockSerializer(product_stock, many=False)
+            product_stock = ProductStock.objects.all().order_by('-created_at')
+            product_stock_serializer = ProductStockSerializer(product_stock, many=True)
             return Response(product_stock_serializer.data, status=status.HTTP_200_OK)
         except Exception as ex:
             print(str(ex))
@@ -344,6 +344,22 @@ def list_raw_info_view(request):
         except Exception as ex:
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def list_all_raw_info_view(request):
+    """
+    API endpoint that return all raw list
+    """
+    if request.method == "GET":
+        try:
+            raw_info = Raw.objects.all().order_by('-created_at')
+            raw_info_serializer = RawSerializer(raw_info, many=True)
+            return Response(raw_info_serializer.data, status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": _("Ham madde bilgisi bulunamadı.")}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

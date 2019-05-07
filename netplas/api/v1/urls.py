@@ -42,6 +42,7 @@ urlpatterns = [
          name='raw_stock_delete_service'),
 
     path('raw/list', list_raw_info_view, name='raw_list_service'),
+    path('raw/list/all', list_all_raw_info_view, name='raw_all_list_service'),
     path('raw/create', create_raw_view, name='raw_create_service'),
     path('raw/update/<int:id>/', RawUpdateAPIView.as_view(),
          name='raw_update_service'),

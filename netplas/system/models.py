@@ -232,6 +232,13 @@ def set_budget(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=ProductOrder)
+def add_product_stock(sender, instance, **kwargs):
+    if instance.status == SUCCESS and kwargs['created']:
+        instance.product.stock.count += instance.quantity
+        instance.product.stock.save()
+
+
+@receiver(post_save, sender=ProductOrder)
 def remove_raw_stock(sender, instance, **kwargs):
     if instance.status == WAITING and kwargs['created']:
         raws = instance.product.raws.all()
