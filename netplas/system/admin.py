@@ -19,7 +19,7 @@ class ProductOrderAdmin(admin.ModelAdmin):
             'WAITING': 'warning',
             'FAIL': 'error'
         }
-        return {'class': css_class[obj.status]}
+        return {'class': css_class.get(str(obj.status).upper(), 'FAIL')}
 
     list_display = ('client', 'product', 'quantity',
                     'total', 'status', 'created_at', )
@@ -33,7 +33,7 @@ class RawOrderAdmin(admin.ModelAdmin):
             'WAITING': 'warning',
             'FAIL': 'error'
         }
-        return {'class': css_class[obj.status]}    
+        return {'class': css_class.get(str(obj.status).upper(), 'FAIL')}
     list_display = ('supplier', 'raw', 'quantity',
                     'total', 'status', 'created_at',)
     search_fields = ('name', 'status', )
