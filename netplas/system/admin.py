@@ -13,6 +13,13 @@ class SupplierAdmin(admin.ModelAdmin):
 
 
 class ProductOrderAdmin(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            'SUCCESS': 'success',
+            'WAITING': 'warning',
+            'FAIL': 'error'
+        }
+        return {'class': css_class[obj.status]}
 
     list_display = ('client', 'product', 'quantity',
                     'total', 'status', 'created_at', )
@@ -20,13 +27,28 @@ class ProductOrderAdmin(admin.ModelAdmin):
 
 
 class RawOrderAdmin(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            'SUCCESS': 'success',
+            'WAITING': 'warning',
+            'FAIL': 'error'
+        }
+        return {'class': css_class[obj.status]}    
     list_display = ('supplier', 'raw', 'quantity',
                     'total', 'status', 'created_at',)
     search_fields = ('name', 'status', )
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'salaries', 'total', 'created_at',
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error',
+        }
+        status = 0 if obj.total_income else 1
+        return {'class': css_class[str(status)]}  
+
+    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'total', 'created_at',
                     'updated_at', )
     search_fields = ('user', )
 

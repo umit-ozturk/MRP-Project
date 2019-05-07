@@ -3,12 +3,26 @@ from stock.models import ProductStock, RawStock
 
 
 class ProductStockAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created_at', )
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '1': 'success',
+            '0': 'error',
+        }
+        status = 1 if obj.count > 0 else 0
+        return {'class': css_class[str(status)], 'data': obj.name}
+    list_display = ('name', 'created_at', 'count')
     search_fields = ('name',)
 
 
 class RawStockAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created_at', )
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '1': 'success',
+            '0': 'error',
+        }
+        status = 1 if obj.count > 0 else 0
+        return {'class': css_class[str(status)], 'data': obj.name}
+    list_display = ('name', 'created_at', 'count')
     search_fields = ('name',)
 
 
