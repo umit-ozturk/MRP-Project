@@ -11,7 +11,7 @@ class RawForProdAdmin(admin.ModelAdmin):
         status = 0 if obj.raw.stock.count > 0 else 1
         return {'class': css_class[str(status)]}          
     
-    list_display = ('quantity_for_prod', 'created_at', )
+    list_display = ('product', 'raw', 'quantity_for_prod', 'created_at', )
 
 
 class ProductAdmin(admin.ModelAdmin):
