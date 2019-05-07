@@ -17,6 +17,7 @@ urlpatterns = [
          name='product_stock_delete_service'),
 
     path('product/list', list_product_info_view, name='product_list_service'),
+    path('product/list/all', list_all_product_info_view, name='product_all_list_service'),
     path('product/create', create_product_view, name='product_create_service'),
     path('product/update/<int:id>/', ProductUpdateAPIView.as_view(),
          name='product_update_service'),

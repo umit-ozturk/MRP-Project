@@ -59,7 +59,7 @@ CELERY_BEAT_SCHEDULE = {
      },
     'task_test': {
         'task': 'netplas.celery.debug_task',
-        'schedule': crontab(minute='*/1')
+        'schedule': crontab(minute='*/3')
     }
 }
 

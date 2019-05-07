@@ -179,6 +179,22 @@ class RawStockDeleteAPIView(DestroyAPIView):
 
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
+def list_all_product_info_view(request):
+    """
+    API endpoint that return all product and quantity
+    """
+    if request.method == "GET":
+        try:
+            product_info = Product.objects.all().order_by('-created_at')
+            product_info_serializer = ProductSerializer(product_info, many=True)
+            return Response(product_info_serializer.data, status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": _("Kayıtlı bir ürün bilgisi bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
 @schema(ProductInfoSchema, )
 def list_product_info_view(request):
     """
@@ -186,7 +202,6 @@ def list_product_info_view(request):
     """
     if request.method == "GET":
         try:
-            print("Debug0")
             product_info = Product.objects.filter(name=request.GET.get('product_name')).order_by('-created_at')
             if product_info.count() != 0:
                 product_info_serializer = ProductSerializer(product_info, many=True)
