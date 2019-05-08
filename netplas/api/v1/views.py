@@ -878,6 +878,7 @@ def budget_outcome_detail_and_total_view(request):
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ControlSecretAnswer(UpdateAPIView):
     authentication_classes = (TokenAuthentication,)
     serializer_class = UserProfileUpdateSerializer
@@ -894,3 +895,9 @@ class ControlSecretAnswer(UpdateAPIView):
             user.save()
             return Response({'success': 'Parola Başarıyla Değiştirildi'}, status=status.HTTP_201_CREATED)
         return Response({'error': 'Gizli Soru Cevabı Hatalı'}, status=status.HTTP_403_FORBIDDEN)
+
+
+class GetUsersView(ListAPIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
