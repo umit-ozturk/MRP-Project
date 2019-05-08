@@ -26,6 +26,7 @@ class ProductOrderAdmin(admin.ModelAdmin):
     search_fields = ('product__name', 'status', )
     autocomplete_fields =['product', 'client']
 
+
 class RawOrderAdmin(admin.ModelAdmin):
     def suit_row_attributes(self, obj, request):
         css_class = {
@@ -38,6 +39,48 @@ class RawOrderAdmin(admin.ModelAdmin):
                     'total', 'status', 'created_at',)
     search_fields = ('raw__name', 'status', )
     autocomplete_fields =['raw', 'supplier']
+
+
+class DamagedRaw(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error'
+        }
+        status = 0 if obj.stock.count > 0 else 1
+        return {'class': css_class[str(status)]}
+
+    list_display = ('stock', 'name', 'created_at',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields = ['stock']
+
+
+class DamagedProduct(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error'
+        }
+        status = 0 if obj.stock.count > 0 else 1
+        return {'class': css_class[str(status)]}
+
+    list_display = ('stock', 'name', 'created_at',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields = ['stock']
+
+
+class RawAdmin(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error'
+        }
+        status = 0 if obj.stock.count > 0 else 1
+        return {'class': css_class[str(status)]}
+
+    list_display = ('stock', 'name', 'created_at',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields = ['stock']
 
 
 class BudgetAdmin(admin.ModelAdmin):

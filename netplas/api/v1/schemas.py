@@ -17,6 +17,12 @@ RegisterSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
     coreapi.Field(
+        'type',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
         'email',
         required=True,
         location="form",
@@ -347,3 +353,30 @@ UpdatePassword = ManualSchema(fields=[
     ),    
 ])
 
+
+NotAuthenticatedUpdatePassword = ManualSchema(fields=[
+    coreapi.Field(
+        'email',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'secret_answer',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'new_password',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'new_password_again',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])

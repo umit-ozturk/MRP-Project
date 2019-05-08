@@ -60,6 +60,8 @@ class ProductOrder(models.Model):
         _('Sipariş Başlığı'), null=True, blank=True, max_length=150)
     quantity = models.DecimalField(
         _('Siparişteki Ürün Sayısı'), null=True, blank=True, decimal_places=2, max_digits=10, default=Decimal(1))
+    actual_quantity = models.DecimalField(_('Gerçekleştirilen Siparişteki Ürün Sayısı'), null=True, blank=True,
+                                          decimal_places=2, max_digits=10, default=Decimal(0))
     status = models.CharField(_('Ürün Siparişin Durumu'),
                               choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(
@@ -90,6 +92,8 @@ class RawOrder(models.Model):
         _('Sipariş Başlığı'), null=True, blank=True, max_length=150)
     quantity = models.DecimalField(_('Siparişteki Ham madde Sayısı'), null=True, blank=True, decimal_places=2,
                                    max_digits=10, default=Decimal(1))
+    actual_quantity = models.DecimalField(_('Gerçekleştirilen Siparişteki Ham Madde Sayısı'), null=True, blank=True,
+                                          decimal_places=2, max_digits=10, default=Decimal(0))
     status = models.CharField(_('Hammadde Siparişin Durumu'),
                               choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
     created_at = models.DateTimeField(
@@ -136,14 +140,40 @@ class Budget(models.Model):
         return '{}'.format(self.total)
 
 
-@receiver(pre_save, sender=ProductOrder)
-def set_product_order_total(sender, instance, **kwargs):
-    instance.total = instance.product.unit_price * instance.quantity
+class DamagedRaw(models.Model):
+    raw_order = models.ForeignKey(RawOrder, on_delete=models.CASCADE, verbose_name=_('Ham madde Siparişi'))
+    raw = models.ForeignKey(Raw, on_delete=models.CASCADE,
+                            verbose_name=_('Ham madde'))
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
+
+    class Meta:
+        verbose_name = _('Hasarlı Ham madde')
+        verbose_name_plural = _('Hasarlı Ham maddeler')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return '{}'.format(self.raw.name)
 
 
-@receiver(pre_save, sender=RawOrder)
-def set_raw_order_total(sender, instance, **kwargs):
-    instance.total = instance.raw.unit_price * instance.quantity
+class DamagedProduct(models.Model):
+    product_order = models.ForeignKey(ProductOrder, on_delete=models.CASCADE, verbose_name=_('Ham madde Siparişi'))
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, verbose_name=_('Ürün'))
+    created_at = models.DateTimeField(
+        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(
+        _('Güncellenme Tarihi'), auto_now=True, editable=False)
+
+    class Meta:
+        verbose_name = _('Hasarlı Ürün')
+        verbose_name_plural = _('Hasarlı Ürünler')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return '{}'.format(self.product.name)
 
 
 """
@@ -199,6 +229,16 @@ def set_budget_total(sender, instance, **kwargs):
     total_income = Budget.objects.all().exclude(product_order__isnull=True).first()
     instance.total = total_income.total_income + total_outcome.total_outcome
 """
+
+
+@receiver(pre_save, sender=ProductOrder)
+def set_product_order_total(sender, instance, **kwargs):
+    instance.total = instance.product.unit_price * instance.quantity
+
+
+@receiver(pre_save, sender=RawOrder)
+def set_raw_order_total(sender, instance, **kwargs):
+    instance.total = instance.raw.unit_price * instance.quantity
 
 
 @receiver(post_save, sender=RawOrder)

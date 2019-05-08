@@ -2,25 +2,23 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, schema, authentication_classes
+from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema, UpdatePassword
+    CreateProductTemplateSchema, UpdatePassword, NotAuthenticatedUpdatePassword
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
-from product.serializers import ProductSerializer, RawSerializer, DamagedProductSerializer, DamagedRawSerializer, \
-    RawForProdSerializer
+from product.serializers import ProductSerializer, RawSerializer, RawForProdSerializer
+from system.serializers import DamagedProductSerializer, DamagedRawSerializer
 from stock.models import ProductStock, RawStock
-from product.models import Product, Raw, DamagedProduct, DamagedRaw, RawForProduction
-from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
+from product.models import Product, Raw, RawForProduction
+from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer, BudgetTotalSerializer
 from profile.models import UserProfile
@@ -34,6 +32,7 @@ def register_view(request):
     API endpoint that allows users to register.
     """
     try:
+        request.POST._mutable = True
         create_profile(request.user, request.data)
         return Response({"detail": _("Üyelik başarıyla oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -890,14 +889,45 @@ class ControlSecretAnswer(UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         user = request.user
-        if user.secret_answer ==  request.data['secret_answer']:
+        if user.secret_answer == request.data['secret_answer']:
             user.set_password(request.data['new_password'])
             user.save()
             return Response({'success': 'Parola Başarıyla Değiştirildi'}, status=status.HTTP_201_CREATED)
         return Response({'error': 'Gizli Soru Cevabı Hatalı'}, status=status.HTTP_403_FORBIDDEN)
 
 
-class GetUsersView(ListAPIView):
-    authentication_classes = (TokenAuthentication,)
-    serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.all()
+class NotAuthenticatedControlSecretAnswer(UpdateAPIView):
+    serializer_class = UserProfileUpdateSerializer
+    http_method_names = ['put', ]
+    schema = NotAuthenticatedUpdatePassword
+
+    def get_queryset(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        try:
+            user = UserProfile.objects.get(email=request.data['email'])
+            if user.secret_answer == request.data['secret_answer'] and request.data['new_password'] == \
+                    request.data['new_password_again']:
+                user.set_password(request.data['new_password'])
+                user.save()
+                return Response({'success': _('Parola Başarıyla Değiştirildi')}, status=status.HTTP_201_CREATED)
+            return Response({'error': _('Gizli Soru Cevabı Hatalı')}, status=status.HTTP_403_FORBIDDEN)
+        except:
+            return Response({'error': _('Personel bilgisi bulunamadı')}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def get_all_user(request):
+    """
+    API endpoint that return all users
+    """
+    if request.method == "GET":
+        try:
+            users = UserProfile.objects.filter()
+            serialized_users = UserProfileSerializer(users, many=True)
+            return Response(serialized_users.data, status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
