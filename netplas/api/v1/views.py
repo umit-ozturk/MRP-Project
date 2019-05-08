@@ -78,7 +78,6 @@ def create_product_stock_view(request):
     API endpoint that create product stock
     """
     try:
-        print(request.data['product_stock_name'])
         raw_stock, created = ProductStock.objects.get_or_create(name=request.data['product_stock_name'])
         if not created:
             return Response({"detail": _("Ürün deposu zaten mevcut.")}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -231,6 +230,7 @@ def create_product_view(request):
     except ObjectDoesNotExist:
         return Response({"detail": _("Ürün deposu bulunamadı.")}, status=status.HTTP_404_NOT_FOUND)
     except Exception as ex:
+        print(str(ex))
         return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -577,6 +577,7 @@ def create_product_order_view(request):  # Testing doesnt not yet.
         product_order.save()
         return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
+        print(str(ex))
         return Response({"detail": _("Girilen bilgiler yanlış veya depoda yeterli hammadde yok.")},
                         status=status.HTTP_400_BAD_REQUEST)
 

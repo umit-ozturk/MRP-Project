@@ -48,7 +48,7 @@ class BudgetAdmin(admin.ModelAdmin):
         status = 0 if obj.total_income else 1
         return {'class': css_class[str(status)]}  
 
-    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'total', 'created_at',
+    list_display = ('product_order', 'raw_order', 'salaries', 'total_income', 'total_outcome', 'total', 'created_at',
                     'updated_at', )
     search_fields = ('user', )
 

@@ -26,6 +26,7 @@ class Raw(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
+
 class Product(models.Model):
     stock = models.ForeignKey(
         ProductStock, on_delete=models.CASCADE, verbose_name=_('Ürün Deposu'))
