@@ -23,7 +23,7 @@ class ProductOrderAdmin(admin.ModelAdmin):
 
     list_display = ('client', 'product', 'quantity',
                     'total', 'status', 'created_at', )
-    search_fields = ('name', 'status', )
+    search_fields = ('product__name', 'status', )
 
 
 class RawOrderAdmin(admin.ModelAdmin):
@@ -36,7 +36,7 @@ class RawOrderAdmin(admin.ModelAdmin):
         return {'class': css_class.get(str(obj.status).upper(), 'FAIL')}
     list_display = ('supplier', 'raw', 'quantity',
                     'total', 'status', 'created_at',)
-    search_fields = ('name', 'status', )
+    search_fields = ('raw__name', 'status', )
 
 
 class BudgetAdmin(admin.ModelAdmin):
