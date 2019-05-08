@@ -24,7 +24,7 @@ class ProductOrderAdmin(admin.ModelAdmin):
     list_display = ('client', 'product', 'quantity',
                     'total', 'status', 'created_at', )
     search_fields = ('product__name', 'status', )
-
+    autocomplete_fields =['product', 'client']
 
 class RawOrderAdmin(admin.ModelAdmin):
     def suit_row_attributes(self, obj, request):
@@ -37,6 +37,7 @@ class RawOrderAdmin(admin.ModelAdmin):
     list_display = ('supplier', 'raw', 'quantity',
                     'total', 'status', 'created_at',)
     search_fields = ('raw__name', 'status', )
+    autocomplete_fields =['raw', 'supplier']
 
 
 class BudgetAdmin(admin.ModelAdmin):
@@ -47,10 +48,10 @@ class BudgetAdmin(admin.ModelAdmin):
         }
         status = 0 if obj.total_income else 1
         return {'class': css_class[str(status)]}  
-
     list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'total', 'created_at',
                     'updated_at', )
-    search_fields = ('user', )
+    search_fields = ('product_order__name', 'raw_order__name')
+    autocomplete_fields =['product_order', 'raw_order']
 
 
 admin.site.register(Client, ClientAdmin)
