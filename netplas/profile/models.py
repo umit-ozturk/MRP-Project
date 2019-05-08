@@ -20,6 +20,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('Active'), default=True)
     created_at = models.DateTimeField(_('Oluşturulma Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('Güncellenme Tarihi'), auto_now=True, editable=False)
+    secret_answer = models.CharField('Gizli Soru Cevabı', blank=True, null=True, max_length=140)
 
     USERNAME_FIELD = 'email'
     objects = AmbarUserManager()

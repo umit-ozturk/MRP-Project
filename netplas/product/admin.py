@@ -12,6 +12,8 @@ class RawForProdAdmin(admin.ModelAdmin):
         return {'class': css_class[str(status)]}          
     
     list_display = ('product', 'raw', 'quantity_for_prod', 'created_at', )
+    search_fields = ('product__name', 'raw__name')
+    autocomplete_fields =['product', 'raw']
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -24,7 +26,8 @@ class ProductAdmin(admin.ModelAdmin):
         return {'class': css_class[str(status)]}  
 
     list_display = ('stock', 'name', 'created_at', )
-    search_fields = ('stock', 'name',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields =['stock']
 
 
 class RawAdmin(admin.ModelAdmin):
@@ -37,7 +40,8 @@ class RawAdmin(admin.ModelAdmin):
         return {'class': css_class[str(status)]}  
         
     list_display = ('stock', 'name', 'created_at', )
-    search_fields = ('stock', 'name',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields =['stock']
 
 
 admin.site.register(RawForProduction, RawForProdAdmin)

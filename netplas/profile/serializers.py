@@ -9,10 +9,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'email', 'name', 'surname', 'type', 'created_at', 'updated_at', )
+        fields = ('id', 'email', 'name', 'surname', 'type', 'created_at', 'updated_at', 'secret_answer')
 
     def get_created_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('email', 'name', 'surname', 'type', 'secret_answer', 'password')
