@@ -6,13 +6,15 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema
+    CreateProductTemplateSchema, UpdatePassword
 from api.v1.tools import create_profile, check_user_is_valid
-from profile.serializers import UserProfileSerializer
+from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer, DamagedProductSerializer, DamagedRawSerializer, \
     RawForProdSerializer
@@ -858,3 +860,20 @@ def budget_outcome_detail_and_total_view(request):
         except Exception as ex:
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+class ControlSecretAnswer(UpdateAPIView):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = UserProfileUpdateSerializer
+    http_method_names = ['put', 'patch']
+    schema = UpdatePassword
+
+    def get_queryset(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        if user.secret_answer ==  request.data['secret_answer']:
+            user.set_password(request.data['new_password'])
+            user.save()
+            return Response({'success': 'Parola Başarıyla Değiştirildi'}, status=status.HTTP_201_CREATED)
+        return Response({'error': 'Gizli Soru Cevabı Hatalı'}, status=status.HTTP_403_FORBIDDEN)

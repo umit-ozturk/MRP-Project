@@ -34,6 +34,12 @@ RegisterSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+        coreapi.Field(
+        'secret_answer',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
 ])
 
 
@@ -325,3 +331,19 @@ DamagedCreateProductOrderSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
+
+UpdatePassword = ManualSchema(fields=[
+    coreapi.Field(
+        'new_password',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'secret_answer',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),    
+])
+
