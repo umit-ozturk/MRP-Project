@@ -69,3 +69,12 @@ class RawForProduction(models.Model):
 
     def __str__(self):
         return '{}'.format(self.product)
+
+
+class ProductAttr(models.Model):
+    product = models.ForeignKey(Product, related_name='attr', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=500)
+
+    def __str__(self):
+        return f'{self.name} - {self.value}'

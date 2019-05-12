@@ -130,6 +130,12 @@ CreateProductSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.Integer()
     ),
+    coreapi.Field(
+        'product_attr',
+        required=False,
+        location='form',
+        schema=coreschema.Array()
+    )
 ])
 
 

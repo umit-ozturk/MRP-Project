@@ -6,6 +6,8 @@ from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.db.models import F
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
@@ -17,7 +19,7 @@ from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer, RawForProdSerializer
 from system.serializers import DamagedProductSerializer, DamagedRawSerializer
 from stock.models import ProductStock, RawStock
-from product.models import Product, Raw, RawForProduction
+from product.models import Product, Raw, DamagedProduct, DamagedRaw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer, BudgetTotalSerializer
@@ -204,6 +206,7 @@ def list_product_info_view(request):
         try:
             product_info = Product.objects.filter(name=request.GET.get('product_name')).order_by('-created_at')
             if product_info.count() != 0:
+                print(product_info)
                 product_info_serializer = ProductSerializer(product_info, many=True)
                 return Response(product_info_serializer.data, status=status.HTTP_200_OK)
             else:
@@ -226,6 +229,8 @@ def create_product_view(request):
         product = Product(stock=product_stock, name=request.data["product_name"],
                           unit_price=request.data["unit_price"], amount=request.data['amount'])
         product.save()
+        for attr in request.data.get('product_attr', []):
+            ProductAttr.objects.create(**attr, product=product)
         return Response({"detail": _("Ürün başarıyla oluşturuldu.")},
                         status=status.HTTP_200_OK)
     except ObjectDoesNotExist:
