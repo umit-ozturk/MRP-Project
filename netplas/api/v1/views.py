@@ -229,8 +229,7 @@ def create_product_view(request):
         product = Product(stock=product_stock, name=request.data["product_name"],
                           unit_price=request.data["unit_price"], amount=request.data['amount'])
         product.save()
-        for attr in request.data['product_attr']:
-            print(attr)
+        for attr in request.data.get('product_attr', []):
             ProductAttr.objects.create(**attr, product=product)
         return Response({"detail": _("Ürün başarıyla oluşturuldu.")},
                         status=status.HTTP_200_OK)
