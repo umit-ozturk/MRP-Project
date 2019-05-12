@@ -26,6 +26,7 @@ class Raw(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
+
 class Product(models.Model):
     stock = models.ForeignKey(
         ProductStock, on_delete=models.CASCADE, verbose_name=_('Ürün Deposu'))
@@ -47,40 +48,6 @@ class Product(models.Model):
 
     def __str__(self):
         return '{}'.format(self.name)
-
-
-class DamagedRaw(models.Model):
-    raw = models.ForeignKey(Raw, on_delete=models.CASCADE,
-                            verbose_name=_('Ham madde'))
-    created_at = models.DateTimeField(
-        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(
-        _('Güncellenme Tarihi'), auto_now=True, editable=False)
-
-    class Meta:
-        verbose_name = _('Hasarlı Ham madde')
-        verbose_name_plural = _('Hasarlı Ham maddeler')
-        ordering = ('-created_at',)
-
-    def __str__(self):
-        return '{}'.format(self.raw.name)
-
-
-class DamagedProduct(models.Model):
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, verbose_name=_('Ürün'))
-    created_at = models.DateTimeField(
-        _('Kayıt Tarihi'), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(
-        _('Güncellenme Tarihi'), auto_now=True, editable=False)
-
-    class Meta:
-        verbose_name = _('Hasarlı Ürün')
-        verbose_name_plural = _('Hasarlı Ürünler')
-        ordering = ('-created_at',)
-
-    def __str__(self):
-        return '{}'.format(self.product.name)
 
 
 class RawForProduction(models.Model):

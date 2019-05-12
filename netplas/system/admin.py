@@ -26,6 +26,7 @@ class ProductOrderAdmin(admin.ModelAdmin):
     search_fields = ('product__name', 'status', )
     autocomplete_fields =['product', 'client']
 
+
 class RawOrderAdmin(admin.ModelAdmin):
     def suit_row_attributes(self, obj, request):
         css_class = {
@@ -40,6 +41,48 @@ class RawOrderAdmin(admin.ModelAdmin):
     autocomplete_fields =['raw', 'supplier']
 
 
+class DamagedRaw(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error'
+        }
+        status = 0 if obj.stock.count > 0 else 1
+        return {'class': css_class[str(status)]}
+
+    list_display = ('stock', 'name', 'created_at',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields = ['stock']
+
+
+class DamagedProduct(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error'
+        }
+        status = 0 if obj.stock.count > 0 else 1
+        return {'class': css_class[str(status)]}
+
+    list_display = ('stock', 'name', 'created_at',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields = ['stock']
+
+
+class RawAdmin(admin.ModelAdmin):
+    def suit_row_attributes(self, obj, request):
+        css_class = {
+            '0': 'success',
+            '1': 'error'
+        }
+        status = 0 if obj.stock.count > 0 else 1
+        return {'class': css_class[str(status)]}
+
+    list_display = ('stock', 'name', 'created_at',)
+    search_fields = ('stock__name', 'name',)
+    autocomplete_fields = ['stock']
+
+
 class BudgetAdmin(admin.ModelAdmin):
     def suit_row_attributes(self, obj, request):
         css_class = {
@@ -47,9 +90,11 @@ class BudgetAdmin(admin.ModelAdmin):
             '1': 'error',
         }
         status = 0 if obj.total_income else 1
-        return {'class': css_class[str(status)]}  
-    list_display = ('product_order', 'raw_order', 'total_income', 'total_outcome', 'total', 'created_at',
+        return {'class': css_class[str(status)]}
+
+    list_display = ('product_order', 'raw_order', 'salaries', 'total_income', 'total_outcome', 'total', 'created_at',
                     'updated_at', )
+
     search_fields = ('product_order__name', 'raw_order__name')
     autocomplete_fields =['product_order', 'raw_order']
 

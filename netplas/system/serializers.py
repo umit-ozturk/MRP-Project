@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.template.defaultfilters import date as _date
-from system.models import Client, Supplier, RawOrder, ProductOrder, Budget
+from system.models import Client, Supplier, RawOrder, ProductOrder, Budget, DamagedProduct, DamagedRaw
 from product.serializers import RawSerializer, ProductSerializer
 from profile.serializers import UserProfileSerializer
 
@@ -67,6 +67,38 @@ class ProductOrderSerializer(serializers.ModelSerializer):
         model = ProductOrder
         fields = ('id', 'status', 'quantity', 'total',
                   'client', 'product', 'created_at', 'updated_at', 'user')
+
+    def get_created_at(self, obj):
+        return _date(obj.updated_at, "d F, Y - H:m")
+
+    def get_updated_at(self, obj):
+        return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class DamagedProductSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(many=False, read_only=True)
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DamagedProduct
+        fields = ("id", 'product', 'created_at', 'updated_at', )
+
+    def get_created_at(self, obj):
+        return _date(obj.updated_at, "d F, Y - H:m")
+
+    def get_updated_at(self, obj):
+        return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class DamagedRawSerializer(serializers.ModelSerializer):
+    raw = RawSerializer(many=False, read_only=True)
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DamagedRaw
+        fields = ("id", 'raw', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")

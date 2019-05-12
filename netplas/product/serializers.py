@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.template.defaultfilters import date as _date
-from product.models import Product, Raw, DamagedProduct, DamagedRaw, RawForProduction
+from product.models import Product, Raw, RawForProduction
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 
 
@@ -108,3 +108,4 @@ class DamagedRawSerializer(serializers.ModelSerializer):
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+

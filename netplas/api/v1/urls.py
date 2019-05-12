@@ -6,7 +6,8 @@ app_name = 'api'
 urlpatterns = [
     path('register/', register_view, name='register_service'),
     path('login/', login_view, name='login_service'),
-    path('update/password', ControlSecretAnswer.as_view(), name='update-password'),
+    path('update/password/without_login', ControlSecretAnswer.as_view(), name='update_password_service'),
+    path('get_users/', get_all_user, name='get_users_service'),
 
 
     path('product_stock/list', list_product_stock_view,
