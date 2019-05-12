@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import F
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
@@ -206,6 +206,7 @@ def list_product_info_view(request):
         try:
             product_info = Product.objects.filter(name=request.GET.get('product_name')).order_by('-created_at')
             if product_info.count() != 0:
+                print(product_info)
                 product_info_serializer = ProductSerializer(product_info, many=True)
                 return Response(product_info_serializer.data, status=status.HTTP_200_OK)
             else:

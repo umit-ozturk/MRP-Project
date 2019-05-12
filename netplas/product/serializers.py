@@ -52,11 +52,12 @@ class ProductSerializer(serializers.ModelSerializer):
     raw_for_prod = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
+    product_attr = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ("id", 'stock', 'raw_for_prod', 'name',
-                  'amount', 'created_at', 'updated_at', )
+                  'amount', 'created_at', 'updated_at', 'product_attr')
 
     def get_raw_for_prod(self, obj):
         raw_recipe = RawForProduction.objects.filter(product__name=obj.name)
@@ -67,6 +68,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+
+    def get_product_attr(self, obj):
+        data = {}
+        for item in obj.attr.all().values_list('name', 'value'):
+            data.update(
+                {item[0]: item[1]}
+            )
+        return data
 
 
 class DamagedProductSerializer(serializers.ModelSerializer):

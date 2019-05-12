@@ -1,5 +1,5 @@
 from django.contrib import admin
-from product.models import Product, Raw, RawForProduction
+from product.models import Product, Raw, RawForProduction, ProductAttr
 
 
 class RawForProdAdmin(admin.ModelAdmin):
@@ -47,3 +47,4 @@ class RawAdmin(admin.ModelAdmin):
 admin.site.register(RawForProduction, RawForProdAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Raw, RawAdmin)
+admin.site.register(ProductAttr)
