@@ -6,13 +6,14 @@ from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+
 from rest_framework.views import APIView
 from django.db.models import F
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema
+    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
@@ -918,6 +919,23 @@ class ControlSecretAnswer(UpdateAPIView):
     serializer_class = UserProfileUpdateSerializer
     http_method_names = ['put', ]
     schema = UpdatePassword
+
+    def get_queryset(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        if user.secret_answer == request.data['secret_answer']:
+            user.set_password(request.data['new_password'])
+            user.save()
+            return Response({'success': 'Parola Başarıyla Değiştirildi'}, status=status.HTTP_201_CREATED)
+        return Response({'error': 'Gizli Soru Cevabı Hatalı'}, status=status.HTTP_403_FORBIDDEN)
+
+
+class NotAuthenticatedControlSecretAnswer(UpdateAPIView):
+    serializer_class = UserProfileUpdateSerializer
+    http_method_names = ['put', 'patch']
+    schema = NotAuthenticatedUpdatePassword
 
     def get_queryset(self):
         return self.request.user

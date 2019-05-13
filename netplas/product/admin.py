@@ -11,7 +11,7 @@ class RawForProdAdmin(admin.ModelAdmin):
         status = 0 if obj.raw.stock.count > 0 else 1
         return {'class': css_class[str(status)]}          
     
-    list_display = ('product', 'raw', 'quantity_for_prod', 'created_at', )
+    list_display = ('id', 'product', 'raw', 'quantity_for_prod', 'created_at', )
     search_fields = ('product__name', 'raw__name')
     autocomplete_fields =['product', 'raw']
 
@@ -25,7 +25,7 @@ class ProductAdmin(admin.ModelAdmin):
         status = 0 if obj.stock.count > 0 else 1
         return {'class': css_class[str(status)]}  
 
-    list_display = ('stock', 'name', 'created_at', )
+    list_display = ('id', 'stock', 'name', 'created_at', )
     search_fields = ('stock__name', 'name',)
     autocomplete_fields =['stock']
 
@@ -39,7 +39,7 @@ class RawAdmin(admin.ModelAdmin):
         status = 0 if obj.stock.count > 0 else 1
         return {'class': css_class[str(status)]}  
         
-    list_display = ('stock', 'name', 'created_at', )
+    list_display = ('id', 'stock', 'name', 'created_at', )
     search_fields = ('stock__name', 'name',)
     autocomplete_fields =['stock']
 
