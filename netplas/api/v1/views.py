@@ -17,7 +17,7 @@ from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer, DamagedProductSerializer, DamagedRawSerializer, \
-    RawForProdSerializer
+    RawForProdSerializer, ProductUpdateSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, DamagedProduct, DamagedRaw, RawForProduction
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget
@@ -237,7 +237,7 @@ def create_product_view(request):
 
 
 class ProductUpdateAPIView(UpdateAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateProductSchema

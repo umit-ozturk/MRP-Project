@@ -47,6 +47,12 @@ class ExcludeProductRawForProdSerializer(serializers.ModelSerializer):
         fields = ("id", 'raw', 'quantity_for_prod', )
 
 
+class ProductUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('stock', 'name', 'amount', 'unit_price')
+
+
 class ProductSerializer(serializers.ModelSerializer):
     stock = ProductStockSerializer(many=False, read_only=True)
     raw_for_prod = serializers.SerializerMethodField()
@@ -56,7 +62,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ("id", 'stock', 'raw_for_prod', 'name',
-                  'amount', 'created_at', 'updated_at', )
+                  'amount', 'unit_price', 'created_at', 'updated_at', 'product_attr')
 
     def get_raw_for_prod(self, obj):
         raw_recipe = RawForProduction.objects.filter(product__name=obj.name)
