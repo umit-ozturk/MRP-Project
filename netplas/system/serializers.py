@@ -12,13 +12,21 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ('id', 'email', 'name', 'surname',
-                  'phone', 'created_at', 'updated_at')
+                  'phone', 'created_at', 'updated_at', 'company', 'address')
 
     def get_created_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class ClientUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Client
+        fields = ('email', 'name', 'surname',
+                  'phone', 'company', 'address')
 
 
 class SupplierSerializer(serializers.ModelSerializer):
@@ -28,13 +36,21 @@ class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Supplier
         fields = ('id', 'email', 'name', 'surname',
-                  'phone', 'created_at', 'updated_at')
+                  'phone', 'created_at', 'updated_at', 'address', 'company')
 
     def get_created_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class SupplierUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Supplier
+        fields = ('email', 'name', 'surname',
+                  'phone', 'address', 'company')
 
 
 class RawOrderSerializer(serializers.ModelSerializer):

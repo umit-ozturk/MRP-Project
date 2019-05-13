@@ -13,7 +13,7 @@ from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword
+    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword, UpdateProductStockSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
@@ -24,7 +24,7 @@ from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
-    BudgetSerializer, BudgetTotalSerializer
+    BudgetSerializer, BudgetTotalSerializer, ClientUpdateSerializer, SupplierUpdateSerializer
 from profile.models import UserProfile
 from decimal import Decimal
 
@@ -95,7 +95,7 @@ class ProductStockUpdateAPIView(UpdateAPIView):
     serializer_class = ProductStockSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
-    schema = CreateProductStockSchema
+    schema = UpdateProductStockSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = ProductStock.objects.all()
@@ -477,7 +477,7 @@ def create_client_view(request):
     """
     try:
         client = Client(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
-                        phone=request.data["phone"])
+                        phone=request.data["phone"], address=request.data['address'], company=request.data['company'])
         client.save()
         return Response({"detail": _("Müşteri başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -485,7 +485,7 @@ def create_client_view(request):
 
 
 class ClientUpdateAPIView(UpdateAPIView):
-    serializer_class = ClientSerializer
+    serializer_class = ClientUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateClientSchema
@@ -548,7 +548,7 @@ def create_supplier_view(request):
 
 
 class SupplierUpdateAPIView(UpdateAPIView):
-    serializer_class = SupplierSerializer
+    serializer_class = SupplierUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateSupplierSchema

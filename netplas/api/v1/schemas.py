@@ -94,6 +94,14 @@ CreateProductStockSchema = ManualSchema(fields=[
     ),
 ])
 
+UpdateProductStockSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
 
 CreateRawStockSchema = ManualSchema(fields=[
     coreapi.Field(
@@ -264,6 +272,18 @@ CreateClientSchema = ManualSchema(fields=[
     ),
     coreapi.Field(
         'phone',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'address',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'company',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -453,4 +473,3 @@ NotAuthenticatedUpdatePassword = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
-
