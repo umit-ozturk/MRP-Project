@@ -3,12 +3,12 @@ from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, Prod
 
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('email', 'name', 'surname', 'phone', 'created_at', )
+    list_display = ('id', 'email', 'name', 'surname', 'phone', 'created_at', )
     search_fields = ('name', 'surname', 'phone', )
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('email', 'name', 'surname', 'phone', 'created_at', )
+    list_display = ('id', 'email', 'name', 'surname', 'phone', 'created_at', )
     search_fields = ('name', 'surname', 'phone', )
 
 
@@ -21,7 +21,7 @@ class ProductOrderAdmin(admin.ModelAdmin):
         }
         return {'class': css_class.get(str(obj.status).upper(), 'FAIL')}
 
-    list_display = ('client', 'product', 'quantity',
+    list_display = ('id', 'client', 'product', 'quantity',
                     'total', 'status', 'created_at', )
     search_fields = ('product__name', 'status', )
     autocomplete_fields =['product', 'client']
@@ -35,7 +35,7 @@ class RawOrderAdmin(admin.ModelAdmin):
             'FAIL': 'error'
         }
         return {'class': css_class.get(str(obj.status).upper(), 'FAIL')}
-    list_display = ('supplier', 'raw', 'quantity',
+    list_display = ('id', 'supplier', 'raw', 'quantity',
                     'total', 'status', 'created_at',)
     search_fields = ('raw__name', 'status', )
     autocomplete_fields =['raw', 'supplier']
@@ -50,7 +50,7 @@ class DamagedRaw(admin.ModelAdmin):
         status = 0 if obj.stock.count > 0 else 1
         return {'class': css_class[str(status)]}
 
-    list_display = ('stock', 'name', 'created_at',)
+    list_display = ('id', 'stock', 'name', 'created_at',)
     search_fields = ('stock__name', 'name',)
     autocomplete_fields = ['stock']
 
@@ -64,7 +64,7 @@ class DamagedProduct(admin.ModelAdmin):
         status = 0 if obj.stock.count > 0 else 1
         return {'class': css_class[str(status)]}
 
-    list_display = ('stock', 'name', 'created_at',)
+    list_display = ('id', 'stock', 'name', 'created_at',)
     search_fields = ('stock__name', 'name',)
     autocomplete_fields = ['stock']
 
@@ -78,7 +78,7 @@ class RawAdmin(admin.ModelAdmin):
         status = 0 if obj.stock.count > 0 else 1
         return {'class': css_class[str(status)]}
 
-    list_display = ('stock', 'name', 'created_at',)
+    list_display = ('id', 'stock', 'name', 'created_at',)
     search_fields = ('stock__name', 'name',)
     autocomplete_fields = ['stock']
 
@@ -92,7 +92,7 @@ class BudgetAdmin(admin.ModelAdmin):
         status = 0 if obj.total_income else 1
         return {'class': css_class[str(status)]}
 
-    list_display = ('product_order', 'raw_order', 'salaries', 'total_income', 'total_outcome', 'total', 'created_at',
+    list_display = ('id', 'product_order', 'raw_order', 'salaries', 'total_income', 'total_outcome', 'total', 'created_at',
                     'updated_at', )
 
     search_fields = ('product_order__name', 'raw_order__name')

@@ -11,7 +11,7 @@ class ProductStockAdmin(admin.ModelAdmin):
         status = 1 if obj.count > 0 else 0
         return {'class': css_class[str(status)], 'data': obj.name}
 
-    list_display = ('name', 'created_at', 'count')
+    list_display = ('id', 'name', 'created_at', 'count')
     search_fields = ('name',)
 
 
@@ -23,7 +23,7 @@ class RawStockAdmin(admin.ModelAdmin):
         }
         status = 1 if obj.count > 0 else 0
         return {'class': css_class[str(status)], 'data': obj.name}
-    list_display = ('name', 'created_at', 'count')
+    list_display = ('id', 'name', 'created_at', 'count')
     search_fields = ('name',)
 
 
