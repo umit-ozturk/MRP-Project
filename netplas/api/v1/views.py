@@ -24,7 +24,7 @@ from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
-    BudgetSerializer, BudgetTotalSerializer
+    BudgetSerializer, BudgetTotalSerializer, ClientUpdateSerializer
 from profile.models import UserProfile
 from decimal import Decimal
 
@@ -477,7 +477,7 @@ def create_client_view(request):
     """
     try:
         client = Client(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
-                        phone=request.data["phone"])
+                        phone=request.data["phone"], address=request.data['address'], company=request.data['company'])
         client.save()
         return Response({"detail": _("Müşteri başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -485,7 +485,7 @@ def create_client_view(request):
 
 
 class ClientUpdateAPIView(UpdateAPIView):
-    serializer_class = ClientSerializer
+    serializer_class = ClientUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateClientSchema

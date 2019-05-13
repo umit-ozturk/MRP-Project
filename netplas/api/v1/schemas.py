@@ -276,6 +276,18 @@ CreateClientSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+    coreapi.Field(
+        'address',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'company',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
 ])
 
 
