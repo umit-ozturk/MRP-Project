@@ -16,10 +16,11 @@ from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductIn
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
-from product.serializers import ProductSerializer, RawSerializer, RawForProdSerializer
+from product.serializers import ProductSerializer, RawSerializer, \
+    RawForProdSerializer, ProductUpdateSerializer, RawForProdUpdateSerializer, RawUpdateSerializer
 from system.serializers import DamagedProductSerializer, DamagedRawSerializer
 from stock.models import ProductStock, RawStock
-from product.models import Product, Raw, DamagedProduct, DamagedRaw, RawForProduction, ProductAttr
+from product.models import Product, Raw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
     BudgetSerializer, BudgetTotalSerializer
@@ -241,7 +242,7 @@ def create_product_view(request):
 
 
 class ProductUpdateAPIView(UpdateAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateProductSchema
@@ -249,6 +250,12 @@ class ProductUpdateAPIView(UpdateAPIView):
     lookup_field = 'id'
     queryset = Product.objects.all()
 
+    def update(self, request, *args, **kwargs):
+        if request.data.get('product_stock_name'):
+            stock_name = request.data.pop('product_stock_name')
+            stock_id = ProductStock.objects.filter(name=stock_name).first().id
+            request.data.update({'stock': stock_id})
+        return super().update(request, *args, **kwargs)
 
 class ProductDeleteAPIView(DestroyAPIView):
     serializer_class = ProductSerializer
@@ -256,7 +263,7 @@ class ProductDeleteAPIView(DestroyAPIView):
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = Product.objects.all()
-
+ 
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -303,13 +310,29 @@ def create_product_template_view(request):
 
 
 class ProductTemplateUpdateAPIView(UpdateAPIView):
-    serializer_class = RawForProdSerializer
+    serializer_class = RawForProdUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateProductTemplateSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = RawForProduction.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        if request.data.get('raw_name'):
+            raw_name = request.data.pop('raw_name')
+            raw = Raw.objects.filter(name=raw_name).first().id
+            request.data.update(
+                {'raw': raw}
+            )
+        if request.data.get('product_name'):
+            product_name = request.data.pop('product_name')
+            product = Product.objects.filter(name=product_name).first().id
+            request.data.update(
+                {'product': product}
+            )
+        return super().update(request, *args, **kwargs)
+
 
 
 class ProductTemplateDeleteAPIView(DestroyAPIView):
@@ -390,7 +413,7 @@ def create_raw_view(request):
 
 
 class RawUpdateAPIView(UpdateAPIView):
-    serializer_class = RawSerializer
+    serializer_class = RawUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateRawSchema
@@ -398,6 +421,14 @@ class RawUpdateAPIView(UpdateAPIView):
     lookup_url_kwarg = 'id'
     queryset = Raw.objects.all()
 
+    def update(self, request, *args, **kwargs):
+        if request.data.get('raw_stock_name'):
+            raw_name = request.data.pop('raw_stock_name')
+            raw = RawStock.objects.filter(name=raw_name).first().id
+            request.data.update(
+                {'stock': raw}
+            )
+        return super().update(request, *args, **kwargs)
 
 class RawDeleteAPIView(DestroyAPIView):
     serializer_class = RawSerializer
