@@ -40,7 +40,7 @@ RegisterSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
-        coreapi.Field(
+    coreapi.Field(
         'secret_answer',
         required=True,
         location="form",
@@ -139,6 +139,33 @@ CreateProductSchema = ManualSchema(fields=[
 ])
 
 
+UpdateProductSchema = ManualSchema(fields=[
+    coreapi.Field(
+        name='product_stock_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        name='name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'unit_price',
+        required=True,
+        location="form",
+        schema=coreschema.Integer()
+    ),
+    coreapi.Field(
+        'amount',
+        required=False,
+        location="form",
+        schema=coreschema.Integer()
+    )
+])
+
 CreateProductTemplateSchema = ManualSchema(fields=[
     coreapi.Field(
         name='product_name',
@@ -170,6 +197,33 @@ CreateRawSchema = ManualSchema(fields=[
     ),
     coreapi.Field(
         'raw_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'unit_price',
+        required=True,
+        location="form",
+        schema=coreschema.Integer()
+    ),
+    coreapi.Field(
+        'amount',
+        required=True,
+        location="form",
+        schema=coreschema.Integer()
+    ),
+])
+
+UpdateRawSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'raw_stock_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'name',
         required=True,
         location="form",
         schema=coreschema.String()
