@@ -371,3 +371,32 @@ UpdatePassword = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
+
+
+NotAuthenticatedUpdatePassword = ManualSchema(fields=[
+    coreapi.Field(
+        'email',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'secret_answer',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'new_password',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'new_password_again',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
+
