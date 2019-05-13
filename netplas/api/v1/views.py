@@ -24,7 +24,7 @@ from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
-    BudgetSerializer, BudgetTotalSerializer, ClientUpdateSerializer
+    BudgetSerializer, BudgetTotalSerializer, ClientUpdateSerializer, SupplierUpdateSerializer
 from profile.models import UserProfile
 from decimal import Decimal
 
@@ -548,7 +548,7 @@ def create_supplier_view(request):
 
 
 class SupplierUpdateAPIView(UpdateAPIView):
-    serializer_class = SupplierSerializer
+    serializer_class = SupplierUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateSupplierSchema
