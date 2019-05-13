@@ -8,20 +8,22 @@ def create_profile(user, params):
     try:
         if user and user.is_authenticated:
             raise Exception("Zaten giriş yapmış durumdasınız.")
-        if UserProfile.objects.filter(email=params["user"]["email"]).exists():
+        if UserProfile.objects.filter(email=params["email"]).exists():
             raise Exception('Lütfen başka bir e-posta adresi kullanın.')
-        password = params["user"]['password']
-        password_again = params["user"]['password_again']
+        password = params['password']
+        password_again = params['password_again']
         if password != password_again:
             raise Exception('Girdiğiniz parolalar aynı değil. Lütfen tekrar deneyiniz..')
         else:
+
             try:
                 password_validation.validate_password(password)
             except ValidationError:
                 raise Exception('Girilen parololar doğru değil.')
-            params["user"]["password"] = make_password(password)
-            params["user"].pop("password_again")
-            profile = UserProfile(**params["user"])
+            params["password"] = make_password(str(password))
+            params.pop("password_again")
+            profile = UserProfile(email=params['email'], password=params['password'], name=params['name'],
+                                  surname=params['surname'], secret_answer=params['secret_answer'], type=params['type'])
             profile.save()
     except Exception as ex:
         raise Exception(ex)

@@ -17,6 +17,12 @@ RegisterSchema = ManualSchema(fields=[
         schema=coreschema.String()
     ),
     coreapi.Field(
+        'type',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
         'email',
         required=True,
         location="form",
@@ -124,6 +130,12 @@ CreateProductSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.Integer()
     ),
+    coreapi.Field(
+        'product_attr',
+        required=False,
+        location='form',
+        schema=coreschema.Array()
+    )
 ])
 
 
@@ -332,9 +344,10 @@ DamagedCreateProductOrderSchema = ManualSchema(fields=[
     ),
 ])
 
+
 UpdatePassword = ManualSchema(fields=[
     coreapi.Field(
-        'new_password',
+        'email',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -344,6 +357,17 @@ UpdatePassword = ManualSchema(fields=[
         required=True,
         location="form",
         schema=coreschema.String()
-    ),    
+    ),
+    coreapi.Field(
+        'new_password',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'new_password_again',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
 ])
-

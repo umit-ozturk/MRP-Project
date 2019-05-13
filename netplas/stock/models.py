@@ -41,19 +41,10 @@ class RawStock(models.Model):
         return '{}'.format(self.name)
 
 
-@receiver(pre_save, sender=ProductStock)
+@receiver(pre_save, sender=ProductStock)  ###
 def set_product_stock_total(sender, instance, **kwargs):
     try:
         instance.count = instance.count + ProductStock.objects.filter(name=instance.name
                                                                       ).aggregate(Sum('count'))['count__sum']
-    except:
-        instance.count = 0
-
-
-@receiver(pre_save, sender=RawStock)
-def set_raw_stock_total(sender, instance, **kwargs):
-    try:
-        instance.count = instance.count + RawStock.objects.filter(name=instance.name
-                                                                  ).aggregate(Sum('count'))['count__sum']
     except:
         instance.count = 0
