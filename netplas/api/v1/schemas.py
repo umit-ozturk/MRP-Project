@@ -94,6 +94,14 @@ CreateProductStockSchema = ManualSchema(fields=[
     ),
 ])
 
+UpdateProductStockSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
 
 CreateRawStockSchema = ManualSchema(fields=[
     coreapi.Field(
@@ -453,4 +461,3 @@ NotAuthenticatedUpdatePassword = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
-

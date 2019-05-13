@@ -89,8 +89,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_product_attr(self, obj):
         data = {}
-        for item in obj.attr.all().values_list('name', 'value'):
+        for item in obj.attr.all().values_list('name', 'value', 'id'):
             data.update(
-                {item[0]: item[1]}
+                {
+                    str(item[2]): {
+                        item[0]: item[1]
+                    }
+                }
             )
         return data

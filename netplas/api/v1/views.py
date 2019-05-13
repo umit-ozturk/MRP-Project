@@ -13,7 +13,7 @@ from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword
+    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword, UpdateProductStockSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
@@ -95,7 +95,7 @@ class ProductStockUpdateAPIView(UpdateAPIView):
     serializer_class = ProductStockSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
-    schema = CreateProductStockSchema
+    schema = UpdateProductStockSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = ProductStock.objects.all()
