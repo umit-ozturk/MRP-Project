@@ -4,6 +4,12 @@ from product.models import Product, Raw, RawForProduction
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 
 
+class RawUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Raw
+        fields = ('stock', 'name', 'amount', 'unit_price')
+
+
 class RawSerializer(serializers.ModelSerializer):
     stock = RawStockSerializer(many=False, read_only=True)
     created_at = serializers.SerializerMethodField()
@@ -12,13 +18,19 @@ class RawSerializer(serializers.ModelSerializer):
     class Meta:
         model = Raw
         fields = ("id", 'stock', 'name', 'amount',
-                  'created_at', 'updated_at', )
+                  'created_at', 'updated_at', 'unit_price')
 
     def get_created_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class RawForProdUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RawForProduction
+        fields = ('raw', 'product', 'quantity_for_prod')
 
 
 class RawForProdSerializer(serializers.ModelSerializer):
