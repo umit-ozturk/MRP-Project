@@ -607,13 +607,14 @@ def create_product_order_view(request):  # Testing doesnt not yet.
         client = Client.objects.get(email=request.data["client_email"])
         personal = UserProfile.objects.get(email=request.data['user_email'])
         product = Product.objects.filter(name=request.data["product_name"]).first()
+        delivery_data = request.data.get('delivery_date', None)
         if request.data['status']:
             product_order = ProductOrder(client=client, product=product, quantity=Decimal(request.data["quantity"]),
                                          personal=personal, order_title=request.data['order_title'],
-                                         status=request.data['status'])
+                                         status=request.data['status'], delivery_date=delivery_data)
         else:
             product_order = ProductOrder(client=client, product=product, quantity=Decimal(request.data["quantity"]),
-                                         personal=personal, order_title=request.data['order_title'])
+                                         personal=personal, order_title=request.data['order_title'], delivery_date=delivery_data)
         product_order.save()
         return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
