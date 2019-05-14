@@ -72,7 +72,8 @@ class RawForProduction(models.Model):
 
 
 class ProductAttr(models.Model):
-    product = models.ForeignKey(Product, related_name='attr', on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, related_name='attr', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=500)
 

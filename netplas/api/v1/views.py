@@ -683,10 +683,10 @@ def create_raw_order_view(request):  # Testing doesnt not yet.
         if request.data['status']:
             raw_order = RawOrder(supplier=supplier, raw=raw, quantity=Decimal(request.data["quantity"]),
                                  personal=personal, order_title=request.data['order_title'],
-                                 status=request.data['status'])
+                                 status=request.data['status'], delivery_date=request.data['delivery_date'])
         else:
             raw_order = RawOrder(supplier=supplier, product=raw, quantity=Decimal(request.data["quantity"]),
-                                 personal=personal, order_title=request.data['order_title'])
+                                 personal=personal, order_title=request.data['order_title'], delivery_date=request.data['delivery_date'])
         raw_order.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
