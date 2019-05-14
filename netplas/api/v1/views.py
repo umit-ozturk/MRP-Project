@@ -432,6 +432,7 @@ class RawUpdateAPIView(UpdateAPIView):
             )
         return super().update(request, *args, **kwargs)
 
+
 class RawDeleteAPIView(DestroyAPIView):
     serializer_class = RawSerializer
     authentication_classes = (TokenAuthentication,)
@@ -701,6 +702,13 @@ class RawOrderUpdateAPIView(UpdateAPIView):
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = RawOrder.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        raw_order = self.get_object()
+        if raw_order.status != request.data['status']:
+            super().update(request, *args, **kwargs)
+            return Response({'detail': 'Sipariş Durumu Başarı ile Değiştirildi.'}, status=status.HTTP_200_OK)
+        return Response({'detail': _('Siparişin Durumu Zaten Aynı.')}, status=status.HTTP_403_FORBIDDEN)
 
 
 class RawOrderDeleteAPIView(DestroyAPIView):

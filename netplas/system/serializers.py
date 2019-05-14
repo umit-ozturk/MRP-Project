@@ -15,7 +15,7 @@ class ClientSerializer(serializers.ModelSerializer):
                   'phone', 'created_at', 'updated_at', 'company', 'address')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -39,7 +39,7 @@ class SupplierSerializer(serializers.ModelSerializer):
                   'phone', 'created_at', 'updated_at', 'address', 'company')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -66,7 +66,7 @@ class RawOrderSerializer(serializers.ModelSerializer):
                   'supplier', 'raw', 'created_at', 'updated_at', 'user')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -85,7 +85,7 @@ class ProductOrderSerializer(serializers.ModelSerializer):
                   'client', 'product', 'created_at', 'updated_at', 'user')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -101,7 +101,7 @@ class DamagedProductSerializer(serializers.ModelSerializer):
         fields = ("id", 'product', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -117,7 +117,7 @@ class DamagedRawSerializer(serializers.ModelSerializer):
         fields = ("id", 'raw', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -132,7 +132,7 @@ class BudgetTotalSerializer(serializers.ModelSerializer):
         fields = ('id', 'total', 'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -148,7 +148,7 @@ class BudgetSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at', )
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")

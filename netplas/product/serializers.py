@@ -21,7 +21,7 @@ class RawSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at', 'unit_price')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -45,7 +45,7 @@ class RawForProdSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at', 'product')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -82,7 +82,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return ExcludeProductRawForProdSerializer(raw_recipe, many=True).data
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
