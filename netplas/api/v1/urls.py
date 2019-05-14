@@ -23,8 +23,12 @@ urlpatterns = [
          name='product_stock_delete_service'),
 
     path('product/list', list_product_info_view, name='product_list_service'),
-    path('product/list/all', list_all_product_info_view, name='product_all_list_service'),
+    path('product/list/all', list_all_product_info_view,
+         name='product_all_list_service'),
     path('product/create', create_product_view, name='product_create_service'),
+    path('product/attr/create', ProductAttrCreateView.as_view(),
+         name='product_attr_create'),
+
     path('product/update/<int:id>/', ProductUpdateAPIView.as_view(),
          name='product_update_service'),
     path('product/delete/<int:id>/', ProductDeleteAPIView.as_view(),
@@ -106,6 +110,7 @@ urlpatterns = [
          name='damaged_product_delete_service'),
 
     path('budget/total/', budget_total_view, name='total_budget_service'),
+    path('budget/total/detail/', budget_detail_total_view, name='total_detail_budget_service'),
     path('budget/total/income/', budget_income_detail_and_total_view,
          name='income_detail_and_total_budget_service'),
     path('budget/total/outcome/', budget_outcome_detail_and_total_view,

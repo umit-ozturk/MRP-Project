@@ -6,6 +6,7 @@ from rest_framework.generics import UpdateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from rest_framework.generics import CreateAPIView
 
 from rest_framework.views import APIView
 from django.db.models import F
@@ -13,18 +14,18 @@ from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword
+    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword, UpdateProductStockSchema, ProductAttrCreateSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer, \
-    RawForProdSerializer, ProductUpdateSerializer, RawForProdUpdateSerializer, RawUpdateSerializer
+    RawForProdSerializer, ProductUpdateSerializer, RawForProdUpdateSerializer, RawUpdateSerializer, ProductAttrSerializer
 from system.serializers import DamagedProductSerializer, DamagedRawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
-    BudgetSerializer, BudgetTotalSerializer
+    BudgetSerializer, BudgetTotalSerializer, BudgetDetailSerializer, ClientUpdateSerializer, SupplierUpdateSerializer
 from profile.models import UserProfile
 from decimal import Decimal
 
@@ -95,7 +96,7 @@ class ProductStockUpdateAPIView(UpdateAPIView):
     serializer_class = ProductStockSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
-    schema = CreateProductStockSchema
+    schema = UpdateProductStockSchema
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = ProductStock.objects.all()
@@ -431,6 +432,7 @@ class RawUpdateAPIView(UpdateAPIView):
             )
         return super().update(request, *args, **kwargs)
 
+
 class RawDeleteAPIView(DestroyAPIView):
     serializer_class = RawSerializer
     authentication_classes = (TokenAuthentication,)
@@ -477,7 +479,7 @@ def create_client_view(request):
     """
     try:
         client = Client(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
-                        phone=request.data["phone"])
+                        phone=request.data["phone"], address=request.data['address'], company=request.data['company'])
         client.save()
         return Response({"detail": _("Müşteri başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -485,7 +487,7 @@ def create_client_view(request):
 
 
 class ClientUpdateAPIView(UpdateAPIView):
-    serializer_class = ClientSerializer
+    serializer_class = ClientUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateClientSchema
@@ -548,7 +550,7 @@ def create_supplier_view(request):
 
 
 class SupplierUpdateAPIView(UpdateAPIView):
-    serializer_class = SupplierSerializer
+    serializer_class = SupplierUpdateSerializer
     authentication_classes = (TokenAuthentication,)
     http_method_names = ('put', 'patch',)
     schema = CreateSupplierSchema
@@ -700,6 +702,13 @@ class RawOrderUpdateAPIView(UpdateAPIView):
     lookup_url_kwarg = 'id'
     lookup_field = 'id'
     queryset = RawOrder.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        raw_order = self.get_object()
+        if raw_order.status != request.data['status']:
+            super().update(request, *args, **kwargs)
+            return Response({'detail': 'Sipariş Durumu Başarı ile Değiştirildi.'}, status=status.HTTP_200_OK)
+        return Response({'detail': _('Siparişin Durumu Zaten Aynı.')}, status=status.HTTP_403_FORBIDDEN)
 
 
 class RawOrderDeleteAPIView(DestroyAPIView):
@@ -877,6 +886,27 @@ def budget_total_view(request):
 
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
+def budget_detail_total_view(request):
+    """
+    API endpoint that return total money on system
+    """
+    if request.method == "GET":
+        budget = Budget.objects.filter()
+        try:
+            if budget.exists():
+                budget = budget.all()
+                budget_serializer = BudgetDetailSerializer(budget, many=True)
+                return Response(budget_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Bütçe bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
 def budget_income_detail_and_total_view(request):
     """
     API endpoint that return total income money on system
@@ -967,3 +997,16 @@ def get_all_user(request):
         except Exception as ex:
             print(str(ex))
             return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductAttrCreateView(CreateAPIView):
+    serializer_class = ProductAttrSerializer
+    schema = ProductAttrCreateSchema
+
+    def create(self, request, *args, **kwargs):
+        product_name = request.data.pop('product_name')
+        product = Product.objects.filter(name=product_name).first().id
+        request.data.update(
+            {'product': product}
+        )
+        return super().create(request, *args, **kwargs)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.template.defaultfilters import date as _date
-from product.models import Product, Raw, RawForProduction
+from product.models import Product, Raw, RawForProduction, ProductAttr
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 
 
@@ -21,7 +21,7 @@ class RawSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at', 'unit_price')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -45,7 +45,7 @@ class RawForProdSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at', 'product')
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
@@ -82,15 +82,26 @@ class ProductSerializer(serializers.ModelSerializer):
         return ExcludeProductRawForProdSerializer(raw_recipe, many=True).data
 
     def get_created_at(self, obj):
-        return _date(obj.updated_at, "d F, Y - H:m")
+        return _date(obj.created_at, "d F, Y - H:m")
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
 
     def get_product_attr(self, obj):
         data = {}
-        for item in obj.attr.all().values_list('name', 'value'):
+        for item in obj.attr.all().values_list('name', 'value', 'id'):
             data.update(
-                {item[0]: item[1]}
+                {
+                    str(item[2]): {
+                        item[0]: item[1]
+                    }
+                }
             )
         return data
+
+
+class ProductAttrSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductAttr
+        fields = ('product', 'name', 'value')

@@ -15,6 +15,8 @@ class Client(models.Model):
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
     surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
     phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
+    address = models.CharField('Adres', null=True, blank=True, max_length=140)
+    company = models.CharField('Firma', null=True, blank=True, max_length=140)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -35,6 +37,8 @@ class Supplier(models.Model):
     name = models.CharField(_('İsim'), null=True, blank=True, max_length=150)
     surname = models.CharField('Soyisim', null=True, blank=True, max_length=75)
     phone = models.CharField('Telefon', null=True, blank=True, max_length=75)
+    address = models.CharField('Adres', null=True, blank=True, max_length=140)
+    company = models.CharField('Firma', null=True, blank=True, max_length=140)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -64,6 +68,8 @@ class ProductOrder(models.Model):
                                           decimal_places=2, max_digits=10, default=Decimal(0))
     status = models.CharField(_('Ürün Siparişin Durumu'),
                               choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
+    delivery_date = models.CharField(
+        _('Teslim Tarihi'), null=True, blank=True, max_length=150)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -96,6 +102,8 @@ class RawOrder(models.Model):
                                           decimal_places=2, max_digits=10, default=Decimal(0))
     status = models.CharField(_('Hammadde Siparişin Durumu'),
                               choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
+    delivery_date = models.CharField(
+        _('Teslim Tarihi'), null=True, blank=True, max_length=150)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -141,7 +149,8 @@ class Budget(models.Model):
 
 
 class DamagedRaw(models.Model):
-    raw_order = models.ForeignKey(RawOrder, on_delete=models.CASCADE, verbose_name=_('Ham madde Siparişi'))
+    raw_order = models.ForeignKey(
+        RawOrder, on_delete=models.CASCADE, verbose_name=_('Ham madde Siparişi'))
     raw = models.ForeignKey(Raw, on_delete=models.CASCADE,
                             verbose_name=_('Ham madde'))
     created_at = models.DateTimeField(
@@ -159,7 +168,8 @@ class DamagedRaw(models.Model):
 
 
 class DamagedProduct(models.Model):
-    product_order = models.ForeignKey(ProductOrder, on_delete=models.CASCADE, verbose_name=_('Ham madde Siparişi'))
+    product_order = models.ForeignKey(
+        ProductOrder, on_delete=models.CASCADE, verbose_name=_('Ham madde Siparişi'))
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, verbose_name=_('Ürün'))
     created_at = models.DateTimeField(

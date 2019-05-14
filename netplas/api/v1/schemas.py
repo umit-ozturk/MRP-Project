@@ -94,10 +94,39 @@ CreateProductStockSchema = ManualSchema(fields=[
     ),
 ])
 
+UpdateProductStockSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
 
 CreateRawStockSchema = ManualSchema(fields=[
     coreapi.Field(
         'raw_stock_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
+
+ProductAttrCreateSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'product_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'value',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -268,6 +297,18 @@ CreateClientSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+    coreapi.Field(
+        'address',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'company',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
 ])
 
 
@@ -292,6 +333,18 @@ CreateSupplierSchema = ManualSchema(fields=[
     ),
     coreapi.Field(
         'phone',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'address',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'company',
         required=True,
         location="form",
         schema=coreschema.String()
@@ -336,6 +389,12 @@ CreateProductOrderSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+    coreapi.Field(
+        'delivery_date',
+        required=False,
+        location="form",
+        schema=coreschema.String()
+    )
 ])
 
 
@@ -376,6 +435,12 @@ CreateRawOrderSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+    coreapi.Field(
+        'delivery_date',
+        required=False,
+        location="form",
+        schema=coreschema.String()
+    )
 ])
 
 
@@ -453,4 +518,3 @@ NotAuthenticatedUpdatePassword = ManualSchema(fields=[
         schema=coreschema.String()
     ),
 ])
-
