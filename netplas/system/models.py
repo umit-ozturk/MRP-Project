@@ -68,6 +68,8 @@ class ProductOrder(models.Model):
                                           decimal_places=2, max_digits=10, default=Decimal(0))
     status = models.CharField(_('Ürün Siparişin Durumu'),
                               choices=PRODUCT_ORDER_STATUS, default=WAITING, max_length=150)
+    delivery_date = models.CharField(
+        _('Teslim Tarihi'), null=True, blank=True, max_length=150)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(
@@ -100,6 +102,8 @@ class RawOrder(models.Model):
                                           decimal_places=2, max_digits=10, default=Decimal(0))
     status = models.CharField(_('Hammadde Siparişin Durumu'),
                               choices=RAW_ORDER_STATUS, default=WAITING, max_length=150)
+    delivery_date = models.CharField(
+        _('Teslim Tarihi'), null=True, blank=True, max_length=150)
     created_at = models.DateTimeField(
         _('Kayıt Tarihi'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(

@@ -389,6 +389,12 @@ CreateProductOrderSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+    coreapi.Field(
+        'delivery_date',
+        required=False,
+        location="form",
+        schema=coreschema.String()
+    )
 ])
 
 
@@ -429,6 +435,12 @@ CreateRawOrderSchema = ManualSchema(fields=[
         location="form",
         schema=coreschema.String()
     ),
+    coreapi.Field(
+        'delivery_date',
+        required=False,
+        location="form",
+        schema=coreschema.String()
+    )
 ])
 
 

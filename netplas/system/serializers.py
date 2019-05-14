@@ -57,13 +57,17 @@ class RawOrderSerializer(serializers.ModelSerializer):
     supplier = SupplierSerializer(many=False, read_only=True)
     user = UserProfileSerializer(many=False, read_only=True)
     raw = RawSerializer(many=False, read_only=True)
+    delivery_date = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
     class Meta:
         model = RawOrder
         fields = ('id', 'status', 'quantity', 'total',
-                  'supplier', 'raw', 'created_at', 'updated_at', 'user')
+                  'supplier', 'raw', 'delivery_date', 'created_at', 'updated_at', 'user')
+
+    def get_delivery_date(self, obj):
+        return _date(obj.delivery_date, "d F, Y - H:m")
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y - H:m")
@@ -75,14 +79,18 @@ class RawOrderSerializer(serializers.ModelSerializer):
 class ProductOrderSerializer(serializers.ModelSerializer):
     client = ClientSerializer(many=False, read_only=True)
     product = ProductSerializer(many=False, read_only=True)
+    user = UserProfileSerializer(many=False, read_only=True)
+    delivery_date = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
-    user = UserProfileSerializer(many=False, read_only=True)
 
     class Meta:
         model = ProductOrder
         fields = ('id', 'status', 'quantity', 'total',
-                  'client', 'product', 'created_at', 'updated_at', 'user')
+                  'client', 'product', 'delivery_date', 'created_at', 'updated_at', 'user')
+
+    def get_delivery_date(self, obj):
+        return _date(obj.delivery_date, "d F, Y - H:m")
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y - H:m")
@@ -152,3 +160,22 @@ class BudgetSerializer(serializers.ModelSerializer):
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
+
+
+class BudgetDetailSerializer(serializers.ModelSerializer):
+    product_order = ProductOrderSerializer(many=False, read_only=True)
+    raw_order = RawOrderSerializer(many=False, read_only=True)
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Budget
+        fields = ('id', 'product_order', 'raw_order', 'total_income', 'total_outcome',
+                  'created_at', 'updated_at', )
+
+    def get_created_at(self, obj):
+        return _date(obj.created_at, "d F, Y - H:m")
+
+    def get_updated_at(self, obj):
+        return _date(obj.updated_at, "d F, Y - H:m")
+

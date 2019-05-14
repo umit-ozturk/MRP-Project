@@ -25,7 +25,7 @@ from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, RawForProduction, ProductAttr
 from system.models import Client, Supplier, ProductOrder, RawOrder, Budget, DamagedProduct, DamagedRaw
 from system.serializers import ClientSerializer, SupplierSerializer, ProductOrderSerializer, RawOrderSerializer, \
-    BudgetSerializer, BudgetTotalSerializer, ClientUpdateSerializer, SupplierUpdateSerializer
+    BudgetSerializer, BudgetTotalSerializer, BudgetDetailSerializer, ClientUpdateSerializer, SupplierUpdateSerializer
 from profile.models import UserProfile
 from decimal import Decimal
 
@@ -875,6 +875,27 @@ def budget_total_view(request):
             if budget.exists():
                 budget = budget.first()
                 budget_serializer = BudgetTotalSerializer(budget, many=False)
+                return Response(budget_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": _("Bütçe bilgisi bulunamadı.")},
+                                status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(str(ex))
+            return Response({"detail": str(ex)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def budget_detail_total_view(request):
+    """
+    API endpoint that return total money on system
+    """
+    if request.method == "GET":
+        budget = Budget.objects.filter()
+        try:
+            if budget.exists():
+                budget = budget.all()
+                budget_serializer = BudgetDetailSerializer(budget, many=True)
                 return Response(budget_serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response({"detail": _("Bütçe bilgisi bulunamadı.")},
