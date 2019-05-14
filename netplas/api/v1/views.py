@@ -680,7 +680,7 @@ def create_raw_order_view(request):  # Testing doesnt not yet.
         supplier = Supplier.objects.get(email=request.data["supplier_email"])
         personal = UserProfile.objects.get(email=request.data['user_email'])
         raw = Raw.objects.filter(name=request.data["raw_name"]).first()
-        delivery_data request.data.get('delivery_date', None)
+        delivery_data = request.data.get('delivery_date', None)
         if request.data['status']:
             raw_order = RawOrder(supplier=supplier, raw=raw, quantity=Decimal(request.data["quantity"]),
                                  personal=personal, order_title=request.data['order_title'],
