@@ -112,6 +112,27 @@ CreateRawStockSchema = ManualSchema(fields=[
     ),
 ])
 
+ProductAttrCreateSchema = ManualSchema(fields=[
+    coreapi.Field(
+        'product_name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'name',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'value',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+])
+
 
 CreateProductSchema = ManualSchema(fields=[
     coreapi.Field(
@@ -312,6 +333,18 @@ CreateSupplierSchema = ManualSchema(fields=[
     ),
     coreapi.Field(
         'phone',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'address',
+        required=True,
+        location="form",
+        schema=coreschema.String()
+    ),
+    coreapi.Field(
+        'company',
         required=True,
         location="form",
         schema=coreschema.String()

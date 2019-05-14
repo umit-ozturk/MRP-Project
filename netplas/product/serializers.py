@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.template.defaultfilters import date as _date
-from product.models import Product, Raw, RawForProduction
+from product.models import Product, Raw, RawForProduction, ProductAttr
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 
 
@@ -98,3 +98,10 @@ class ProductSerializer(serializers.ModelSerializer):
                 }
             )
         return data
+
+
+class ProductAttrSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductAttr
+        fields = ('product', 'name', 'value')
