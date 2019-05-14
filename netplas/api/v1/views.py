@@ -680,13 +680,14 @@ def create_raw_order_view(request):  # Testing doesnt not yet.
         supplier = Supplier.objects.get(email=request.data["supplier_email"])
         personal = UserProfile.objects.get(email=request.data['user_email'])
         raw = Raw.objects.filter(name=request.data["raw_name"]).first()
+        delivery_data request.data.get('delivery_date', None)
         if request.data['status']:
             raw_order = RawOrder(supplier=supplier, raw=raw, quantity=Decimal(request.data["quantity"]),
                                  personal=personal, order_title=request.data['order_title'],
-                                 status=request.data['status'], delivery_date=request.data['delivery_date'])
+                                 status=request.data['status'], delivery_date=delivery_data)
         else:
             raw_order = RawOrder(supplier=supplier, product=raw, quantity=Decimal(request.data["quantity"]),
-                                 personal=personal, order_title=request.data['order_title'], delivery_date=request.data['delivery_date'])
+                                 personal=personal, order_title=request.data['order_title'], delivery_date=delivery_data)
         raw_order.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
