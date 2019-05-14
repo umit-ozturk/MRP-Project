@@ -540,7 +540,7 @@ def create_supplier_view(request):
     """
     try:
         supplier = Supplier(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
-                            phone=request.data["phone"])
+                            phone=request.data["phone"], address=request.data['address'], company=request.data['company'])
         supplier.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
