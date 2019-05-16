@@ -7,19 +7,20 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
-
 from rest_framework.views import APIView
 from django.db.models import F
 from rest_framework import status
 from api.v1.schemas import RegisterSchema, LoginSchema, RawInfoSchema, ProductInfoSchema, CreateProductStockSchema, \
     CreateRawStockSchema, CreateProductSchema, CreateRawSchema, CreateClientSchema, CreateSupplierSchema, \
     CreateProductOrderSchema, CreateRawOrderSchema, DamagedCreateRawOrderSchema, DamagedCreateProductOrderSchema, \
-    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword, UpdateProductStockSchema, ProductAttrCreateSchema
+    CreateProductTemplateSchema, UpdatePassword, UpdateProductSchema, UpdateRawSchema, NotAuthenticatedUpdatePassword, \
+    UpdateProductStockSchema, ProductAttrCreateSchema
 from api.v1.tools import create_profile, check_user_is_valid
 from profile.serializers import UserProfileSerializer, UserProfileUpdateSerializer
 from stock.serializers import ProductStockSerializer, RawStockSerializer
 from product.serializers import ProductSerializer, RawSerializer, \
-    RawForProdSerializer, ProductUpdateSerializer, RawForProdUpdateSerializer, RawUpdateSerializer, ProductAttrSerializer
+    RawForProdSerializer, ProductUpdateSerializer, RawForProdUpdateSerializer, RawUpdateSerializer, \
+    ProductAttrSerializer
 from system.serializers import DamagedProductSerializer, DamagedRawSerializer
 from stock.models import ProductStock, RawStock
 from product.models import Product, Raw, RawForProduction, ProductAttr
