@@ -57,7 +57,6 @@ class RawOrderSerializer(serializers.ModelSerializer):
     supplier = SupplierSerializer(many=False, read_only=True)
     user = UserProfileSerializer(many=False, read_only=True)
     raw = RawSerializer(many=False, read_only=True)
-    delivery_date = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
@@ -65,9 +64,6 @@ class RawOrderSerializer(serializers.ModelSerializer):
         model = RawOrder
         fields = ('id', 'status', 'quantity', 'total',
                   'supplier', 'raw', 'delivery_date', 'created_at', 'updated_at', 'user')
-
-    def get_delivery_date(self, obj):
-        return _date(obj.delivery_date, "d F, Y - H:m")
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y - H:m")
@@ -80,7 +76,6 @@ class ProductOrderSerializer(serializers.ModelSerializer):
     client = ClientSerializer(many=False, read_only=True)
     product = ProductSerializer(many=False, read_only=True)
     user = UserProfileSerializer(many=False, read_only=True)
-    delivery_date = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
@@ -88,9 +83,6 @@ class ProductOrderSerializer(serializers.ModelSerializer):
         model = ProductOrder
         fields = ('id', 'status', 'quantity', 'total',
                   'client', 'product', 'delivery_date', 'created_at', 'updated_at', 'user')
-
-    def get_delivery_date(self, obj):
-        return _date(obj.delivery_date, "d F, Y - H:m")
 
     def get_created_at(self, obj):
         return _date(obj.created_at, "d F, Y - H:m")
@@ -178,4 +170,3 @@ class BudgetDetailSerializer(serializers.ModelSerializer):
 
     def get_updated_at(self, obj):
         return _date(obj.updated_at, "d F, Y - H:m")
-

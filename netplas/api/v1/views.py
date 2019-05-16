@@ -543,7 +543,7 @@ def create_supplier_view(request):
     """
     try:
         supplier = Supplier(email=request.data["email"], name=request.data["name"], surname=request.data["surname"],
-                            phone=request.data["phone"])
+                            phone=request.data["phone"], address=request.data['address'], company=request.data['company'])
         supplier.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -608,13 +608,14 @@ def create_product_order_view(request):  # Testing doesnt not yet.
         client = Client.objects.get(email=request.data["client_email"])
         personal = UserProfile.objects.get(email=request.data['user_email'])
         product = Product.objects.filter(name=request.data["product_name"]).first()
+        delivery_data = request.data.get('delivery_date', None)
         if request.data['status']:
             product_order = ProductOrder(client=client, product=product, quantity=Decimal(request.data["quantity"]),
                                          personal=personal, order_title=request.data['order_title'],
-                                         status=request.data['status'])
+                                         status=request.data['status'], delivery_date=delivery_data)
         else:
             product_order = ProductOrder(client=client, product=product, quantity=Decimal(request.data["quantity"]),
-                                         personal=personal, order_title=request.data['order_title'])
+                                         personal=personal, order_title=request.data['order_title'], delivery_date=delivery_data)
         product_order.save()
         return Response({"detail": _("Ürün siparişi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
@@ -681,13 +682,14 @@ def create_raw_order_view(request):  # Testing doesnt not yet.
         supplier = Supplier.objects.get(email=request.data["supplier_email"])
         personal = UserProfile.objects.get(email=request.data['user_email'])
         raw = Raw.objects.filter(name=request.data["raw_name"]).first()
+        delivery_data = request.data.get('delivery_date', None)
         if request.data['status']:
             raw_order = RawOrder(supplier=supplier, raw=raw, quantity=Decimal(request.data["quantity"]),
                                  personal=personal, order_title=request.data['order_title'],
-                                 status=request.data['status'])
+                                 status=request.data['status'], delivery_date=delivery_data)
         else:
             raw_order = RawOrder(supplier=supplier, product=raw, quantity=Decimal(request.data["quantity"]),
-                                 personal=personal, order_title=request.data['order_title'])
+                                 personal=personal, order_title=request.data['order_title'], delivery_date=delivery_data)
         raw_order.save()
         return Response({"detail": _("Tedarikçi başarı ile oluşturuldu.")}, status=status.HTTP_200_OK)
     except Exception as ex:
