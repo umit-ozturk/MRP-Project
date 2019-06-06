@@ -19,8 +19,15 @@ Clone the repository and create a virtual environment.
     $ pip install -r requirements.txt
     $ cd netplas
 
-## Create user
 
+## Create user
+    $ python manage.py migrate
+    $ python manage.py createsuperuser
+
+    
+If you have no such table error ( Use PostgreSQL. You don't have local settings Project uses SQLite by default. )
+
+    $ python manage.py migrate --run-syncdb
     $ python manage.py createsuperuser
     
 ## Run Server
