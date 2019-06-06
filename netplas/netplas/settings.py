@@ -22,8 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = ["*"]
-
 AUTH_USER_MODEL = 'profile.UserProfile'
 
 
@@ -172,7 +170,19 @@ SUIT_CONFIG = {
 }
 
 try:
-    from netplas.local_settings import *
+    from netplas.netplas.local_settings import *
 except ImportError:
     print("Local Settings File is not Found.")
-    pass
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
+    DEBUG = True
+
+    ALLOWED_HOSTS = ['*']
+
+    SECRET_KEY = 'Ex_SECRET_KEY'

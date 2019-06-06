@@ -1,3 +1,4 @@
+netplas/netplas/static/
 netplas/celerybeat-schedule.db
 .vscode
 .DS_Store
