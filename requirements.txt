@@ -8,7 +8,7 @@ coreschema==0.0.4
 Django==2.2.13
 django-filter==2.1.0
 django-suit==0.2.26
-djangorestframework==3.9.2
+djangorestframework==3.11.2
 idna==2.8
 itypes==1.1.0
 Jinja2==2.10
