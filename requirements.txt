@@ -11,7 +11,7 @@ django-suit==0.2.26
 djangorestframework==3.9.2
 idna==2.8
 itypes==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 kombu==4.5.0
 Markdown==3.0.1
 MarkupSafe==1.1.1
